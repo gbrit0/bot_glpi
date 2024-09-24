@@ -7,7 +7,6 @@
       "action":"##ticket.action##",
       "category":"##ticket.category##",
       "closedate":"##ticket.closedate##",
-      "content":"##ticket.content##",
       "creationdate":"##ticket.creationdate##",
       "entity":"##ticket.entity##",
       "globalvalidation":"##ticket.globalvalidation##",
