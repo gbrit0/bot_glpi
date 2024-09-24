@@ -106,16 +106,18 @@
       "urldocument":"##ticket.urldocument##"
    },
    "validations":{
-      "validation.answer.title": "##FOREACH LAST 1 validations####validation.answer.title## ##ENDFOREACHvalidations##",
-      "validation.author":"##FOREACH LAST 1 validations####validation.author####ENDFOREACHvalidations##",
-      "validation.commentsubmission":"##FOREACH LAST 1 validations####validation.commentsubmission####ENDFOREACHvalidations##",
-      "validation.commentvalidation":"##FOREACH LAST 1 validations####validation.commentvalidation####ENDFOREACHvalidations##",
-      "validation.status":"##FOREACH LAST 1 validations####validation.status####ENDFOREACHvalidations##",
-      "validation.submission":"##FOREACH LAST 1 validations####validation.submission.title####ENDFOREACHvalidations##",
-      "validation.submissiondate":"##FOREACH LAST 1 validations####validation.submissiondate####ENDFOREACHvalidations##",
-      "validation.validationdate":"##FOREACH LAST 1 validations####validation.validationdate####ENDFOREACHvalidations##",
-      "validation.validationstatus":"##FOREACH LAST 1 validations####validation.validationstatus####ENDFOREACHvalidations##",
-      "validation.validator":"##FOREACH LAST 1 validations####validation.validator####ENDFOREACHvalidations##"
+      "answer":{
+         "title": "##FOREACH LAST 1 validations####validation.answer.title## ##ENDFOREACHvalidations##"
+      },
+      "author":"##FOREACH LAST 1 validations####validation.author####ENDFOREACHvalidations##",
+      "commentsubmission":"##FOREACH LAST 1 validations####validation.commentsubmission####ENDFOREACHvalidations##",
+      "commentvalidation":"##FOREACH LAST 1 validations####validation.commentvalidation####ENDFOREACHvalidations##",
+      "status":"##FOREACH LAST 1 validations####validation.status####ENDFOREACHvalidations##",
+      "submission":"##FOREACH LAST 1 validations####validation.submission.title####ENDFOREACHvalidations##",
+      "submissiondate":"##FOREACH LAST 1 validations####validation.submissiondate####ENDFOREACHvalidations##",
+      "validationdate":"##FOREACH LAST 1 validations####validation.validationdate####ENDFOREACHvalidations##",
+      "validationstatus":"##FOREACH LAST 1 validations####validation.validationstatus####ENDFOREACHvalidations##",
+      "validator":"##FOREACH LAST 1 validations####validation.validator####ENDFOREACHvalidations##"
        
    },
    "satisfaction":{
