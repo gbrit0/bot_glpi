@@ -41,15 +41,6 @@
       "submission":"##FOREACH LAST 1 validations####validation.submission.title####ENDFOREACHvalidations##",
       "submissiondate":"##FOREACH LAST 1 validations####validation.submissiondate####ENDFOREACHvalidations##",
       "validationdate":"##FOREACH LAST 1 validations####validation.validationdate####ENDFOREACHvalidations##",
-      "validationstatus":"##FOREACH LAST 1 validations####validation.validationstatus####ENDFOREACHvalidations##",
       "validator":"##FOREACH LAST 1 validations####validation.validator####ENDFOREACHvalidations##"
-       
-   },
-   "satisfaction":{
-      "dateanswered":"##satisfaction.dateanswered##",
-      "datebegin":"##satisfaction.datebegin##",
-      "description":"##satisfaction.description##",
-      "satisfaction":"##satisfaction.satisfaction##",
-      "type":"##satisfaction.type##"
    }
 }
