@@ -14,7 +14,7 @@ def handle_post():
 
     try:
         if data['ticket']['lastupdater'] != data['author']['name']:
-            formatMessage(data)
+            sendMessage(data)
     except KeyError as e:
         return jsonify({"error": f"Missing key: {e}"}), 400
 
@@ -22,31 +22,58 @@ def handle_post():
 
 
 
-def formatMessage(data):
-    payload = {
-        "number": f"{data['author']['mobile']}", # destinatário
-        "textMessage": {
-            "text":f"""Olá, {data['author']['name']}!
-            
+def sendMessage(data):
+    match data['ticket']['action']:
+        case 'Atualização de um chamado':
+            payload = {
+                        "number": f"{data['author']['mobile']}", # destinatário
+                        "textMessage": {
+                            "text":f"""Olá, {data['author']['name']}!
+                            
+        Houve uma atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+
+            *Status*: {data['ticket']['status']}
+
+        Para acompanhar acesse o link: {data['ticket']['url']}
+                        """
+                        },
+                        "delay": 1200,
+                        "quoted": {
+                            "key": {
+                                "remoteJid": "556286342844",
+                                "fromMe": True,
+                                "id": "<string>",
+                                "participant": "<string>"
+                            }
+                        },
+                        "linkPreview": True,
+                        "mentionsEveryOne": False
+            }
+        case _:
+            payload = {
+                        "number": f"{data['author']['mobile']}", # destinatário
+                        "textMessage": {
+                            "text":f"""Olá, {data['author']['name']}!
+                            
         {data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
 
         *{data['ticket']['solution']['approval']['author']}:* {data['ticket']['solution']['approval']['description']}
 
-Para acompanhar acesse o link: {data['ticket']['url']}
-        """
-        },
-        "delay": 1200,
-        "quoted": {
-            "key": {
-                "remoteJid": "556286342844",
-                "fromMe": True,
-                "id": "<string>",
-                "participant": "<string>"
-            }
-        },
-        "linkPreview": True,
-        "mentionsEveryOne": False
-    }
+        Para acompanhar acesse o link: {data['ticket']['url']}
+                        """
+                        },
+                        "delay": 1200,
+                        "quoted": {
+                            "key": {
+                                "remoteJid": "556286342844",
+                                "fromMe": True,
+                                "id": "<string>",
+                                "participant": "<string>"
+                            }
+                        },
+                        "linkPreview": True,
+                        "mentionsEveryOne": False
+                }
     
     startChat(payload)
     # print(response.text)
