@@ -31,13 +31,15 @@ def sendMessage(data):
             payload = {
                         "number": f"{data['author']['mobile']}", # destinatário
                         "textMessage": {
-                            "text":f"""Olá, {data['author']['name']}!
+                            "text":f"""*_NOVO ACOMPANHAMENTO_*
                             
-        {data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+Olá, {data['author']['name']}!
+                            
+{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
 
-        *{data['ticket']['solution']['approval']['author']}:* {cleanHtml(data['ticket']['solution']['approval']['description'])}
+    *{data['ticket']['solution']['approval']['author']}:* "{cleanHtml(data['ticket']['solution']['approval']['description'])}"
 
-        Para acompanhar acesse o link: {data['ticket']['url']}
+Para acompanhar acesse o link: {data['ticket']['url']}
                         """
                         },
                         "delay": 1200,
@@ -60,13 +62,15 @@ def sendMessage(data):
            payload = {
                         "number": f"{data['author']['mobile']}", # destinatário
                         "textMessage": {
-                            "text":f"""Olá, {data['author']['name']}!
+                            "text":f"""*_CHAMADO SOLUCIONADO_*
+
+Olá, {data['author']['name']}!
                             
-        Seu chamado nº {data['ticket']['id']} foi solucionado!
+Seu chamado nº {data['ticket']['id']} foi solucionado!
 
-        *{data['ticket']['solution']['author']}:* {cleanHtml(data['ticket']['solution']['description'])}
+    *{data['ticket']['solution']['author']}:* "{cleanHtml(data['ticket']['solution']['description'])}"
 
-        Para acompanhar acesse o link: {data['ticket']['url']}
+Para acompanhar acesse o link: {data['ticket']['url']}
                         """
                         },
                         "delay": 1200,
@@ -86,15 +90,18 @@ def sendMessage(data):
 
 
         case "Atualização de um chamado":
-            if data['documents']:
+            if data['documents'] != '':
+                print('documents')
                 payload = {
                                 "number": f"{data['author']['mobile']}", # destinatário
                                 "textMessage": {
-                                    "text":f"""Olá, {data['author']['name']}!
-                                    
-                {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
+                                    "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*
 
-                Para acompanhar acesse o link: {data['ticket']['url']}
+Olá, {data['author']['name']}!
+                                    
+    {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
+
+Para acompanhar acesse o link: {data['ticket']['url']}
                                 """
                                 },
                                 "delay": 1200,
@@ -116,13 +123,15 @@ def sendMessage(data):
                         payload = {
                                     "number": f"{data['author']['mobile']}", # destinatário
                                     "textMessage": {
-                                        "text":f"""Olá, {data['author']['name']}!
+                                        "text":f"""*_ESPERANDO POR UMA VALIDAÇÃO_*
+
+Olá, {data['author']['name']}!
                                         
-                    Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
 
-                    *Status:* {data['validations']['status']}
+    *Status:* {data['validations']['status']}
 
-                    Para acompanhar acesse o link: {data['ticket']['url']}
+Para acompanhar acesse o link: {data['ticket']['url']}
                                     """
                                     },
                                     "delay": 1200,
@@ -142,15 +151,16 @@ def sendMessage(data):
                         payload = {
                                     "number": f"{data['author']['mobile']}", # destinatário
                                     "textMessage": {
-                                        "text":f"""Olá, {data['author']['name']}!
+                                        "text":f"""
+Olá, {data['author']['name']}!
                                         
-                    Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
 
-                    *Status:* Validação recusada.
+    *Status:* Validação recusada.
 
-                    *{data['ticket']['lastupdater']}*: {cleanHtml(data['validations']['commentvalidation'])}
+    *{data['ticket']['lastupdater']}*: "{cleanHtml(data['validations']['commentvalidation'])}"
 
-                    Para acompanhar acesse o link: {data['ticket']['url']}
+Para acompanhar acesse o link: {data['ticket']['url']}
                                     """ # *Status:* {data['validations']['status']}. 
                                     }, 
                                     "delay": 1200,
@@ -172,13 +182,13 @@ def sendMessage(data):
                                     "textMessage": {
                                         "text":f"""Olá, {data['author']['name']}!
                                         
-                    Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
 
-                    *Status:* Validação concedida.
+    *Status:* Validação concedida.
 
-                    *{data['ticket']['lastupdater']}*: {cleanHtml(data['validations']['commentvalidation'])}
+    *{data['ticket']['lastupdater']}*: "{cleanHtml(data['validations']['commentvalidation'])}"
 
-                    Para acompanhar acesse o link: {data['ticket']['url']}
+Para acompanhar acesse o link: {data['ticket']['url']}
                                     """ # *Status:* {data['validations']['status']}
                                     },
                                     "delay": 1200,
@@ -194,15 +204,41 @@ def sendMessage(data):
                                     "mentionsEveryOne": False
                             }
 
+                    case "Não está sujeita a aprovação":
+                        payload = {
+                                    "number": f"{data['author']['mobile']}", # destinatário
+                                    "textMessage": {
+                                        "text":f"""Olá, {data['author']['name']}!
+                                        
+Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+
+    *Status:* "{data['ticket']['status']}"
+    
+Para acompanhar acesse o link: {data['ticket']['url']}
+                                    """
+                                    },
+                                    "delay": 1200,
+                                    "quoted": {
+                                        "key": {
+                                            "remoteJid": "556286342844",
+                                            "fromMe": True,
+                                            "id": "<string>",
+                                            "participant": "<string>"
+                                        }
+                                    },
+                                    "linkPreview": True,
+                                    "mentionsEveryOne": False
+                        }
+
                     case _:
                         payload = {
                                     "number": f"{data['author']['mobile']}", # destinatário
                                     "textMessage": {
                                         "text":f"""Olá, {data['author']['name']}!
                                         
-                    {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
+    {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
 
-                    Para acompanhar acesse o link: {data['ticket']['url']}
+Para acompanhar acesse o link: {data['ticket']['url']}
                                     """
                                     },
                                     "delay": 1200,
