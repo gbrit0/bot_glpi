@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, Response, make_response
 import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -20,36 +21,13 @@ def handle_post():
 
     return jsonify({"received_data": data}), 200
 
-
+def cleanHtml(texto):
+    clean = BeautifulSoup(texto, "html.parser")
+    return clean.get_text()
 
 def sendMessage(data):
     match data['ticket']['action']:
-        case 'Atualização de um chamado':
-            payload = {
-                        "number": f"{data['author']['mobile']}", # destinatário
-                        "textMessage": {
-                            "text":f"""Olá, {data['author']['name']}!
-                            
-        Houve uma atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
-
-            *Status*: {data['ticket']['status']}
-
-        Para acompanhar acesse o link: {data['ticket']['url']}
-                        """
-                        },
-                        "delay": 1200,
-                        "quoted": {
-                            "key": {
-                                "remoteJid": "556286342844",
-                                "fromMe": True,
-                                "id": "<string>",
-                                "participant": "<string>"
-                            }
-                        },
-                        "linkPreview": True,
-                        "mentionsEveryOne": False
-            }
-        case _:
+        case 'Novo acompanhamento':
             payload = {
                         "number": f"{data['author']['mobile']}", # destinatário
                         "textMessage": {
@@ -57,7 +35,7 @@ def sendMessage(data):
                             
         {data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
 
-        *{data['ticket']['solution']['approval']['author']}:* {data['ticket']['solution']['approval']['description']}
+        *{data['ticket']['solution']['approval']['author']}:* {cleanHtml(data['ticket']['solution']['approval']['description'])}
 
         Para acompanhar acesse o link: {data['ticket']['url']}
                         """
@@ -74,6 +52,171 @@ def sendMessage(data):
                         "linkPreview": True,
                         "mentionsEveryOne": False
                 }
+
+
+
+
+        case "Chamado solucionado":
+           payload = {
+                        "number": f"{data['author']['mobile']}", # destinatário
+                        "textMessage": {
+                            "text":f"""Olá, {data['author']['name']}!
+                            
+        Seu chamado nº {data['ticket']['id']} foi solucionado!
+
+        *{data['ticket']['solution']['author']}:* {cleanHtml(data['ticket']['solution']['description'])}
+
+        Para acompanhar acesse o link: {data['ticket']['url']}
+                        """
+                        },
+                        "delay": 1200,
+                        "quoted": {
+                            "key": {
+                                "remoteJid": "556286342844",
+                                "fromMe": True,
+                                "id": "<string>",
+                                "participant": "<string>"
+                            }
+                        },
+                        "linkPreview": True,
+                        "mentionsEveryOne": False
+                }
+            
+
+
+
+        case "Atualização de um chamado":
+            if data['documents']:
+                payload = {
+                                "number": f"{data['author']['mobile']}", # destinatário
+                                "textMessage": {
+                                    "text":f"""Olá, {data['author']['name']}!
+                                    
+                {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
+
+                Para acompanhar acesse o link: {data['ticket']['url']}
+                                """
+                                },
+                                "delay": 1200,
+                                "quoted": {
+                                    "key": {
+                                        "remoteJid": "556286342844",
+                                        "fromMe": True,
+                                        "id": "<string>",
+                                        "participant": "<string>"
+                                    }
+                                },
+                                "linkPreview": True,
+                                "mentionsEveryOne": False
+                    }
+            else:
+
+                match data['ticket']['globalvalidation']:
+                    case 'Esperando por uma validação':
+                        payload = {
+                                    "number": f"{data['author']['mobile']}", # destinatário
+                                    "textMessage": {
+                                        "text":f"""Olá, {data['author']['name']}!
+                                        
+                    Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+
+                    *Status:* {data['validations']['status']}
+
+                    Para acompanhar acesse o link: {data['ticket']['url']}
+                                    """
+                                    },
+                                    "delay": 1200,
+                                    "quoted": {
+                                        "key": {
+                                            "remoteJid": "556286342844",
+                                            "fromMe": True,
+                                            "id": "<string>",
+                                            "participant": "<string>"
+                                        }
+                                    },
+                                    "linkPreview": True,
+                                    "mentionsEveryOne": False
+                            }
+
+                    case 'Recusado':
+                        payload = {
+                                    "number": f"{data['author']['mobile']}", # destinatário
+                                    "textMessage": {
+                                        "text":f"""Olá, {data['author']['name']}!
+                                        
+                    Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+
+                    *Status:* Validação recusada.
+
+                    *{data['ticket']['lastupdater']}*: {cleanHtml(data['validations']['commentvalidation'])}
+
+                    Para acompanhar acesse o link: {data['ticket']['url']}
+                                    """ # *Status:* {data['validations']['status']}. 
+                                    }, 
+                                    "delay": 1200,
+                                    "quoted": {
+                                        "key": {
+                                            "remoteJid": "556286342844",
+                                            "fromMe": True,
+                                            "id": "<string>",
+                                            "participant": "<string>"
+                                        }
+                                    },
+                                    "linkPreview": True,
+                                    "mentionsEveryOne": False
+                            }
+
+                    case 'Concedida':
+                        payload = {
+                                    "number": f"{data['author']['mobile']}", # destinatário
+                                    "textMessage": {
+                                        "text":f"""Olá, {data['author']['name']}!
+                                        
+                    Nova atualização em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
+
+                    *Status:* Validação concedida.
+
+                    *{data['ticket']['lastupdater']}*: {cleanHtml(data['validations']['commentvalidation'])}
+
+                    Para acompanhar acesse o link: {data['ticket']['url']}
+                                    """ # *Status:* {data['validations']['status']}
+                                    },
+                                    "delay": 1200,
+                                    "quoted": {
+                                        "key": {
+                                            "remoteJid": "556286342844",
+                                            "fromMe": True,
+                                            "id": "<string>",
+                                            "participant": "<string>"
+                                        }
+                                    },
+                                    "linkPreview": True,
+                                    "mentionsEveryOne": False
+                            }
+
+                    case _:
+                        payload = {
+                                    "number": f"{data['author']['mobile']}", # destinatário
+                                    "textMessage": {
+                                        "text":f"""Olá, {data['author']['name']}!
+                                        
+                    {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
+
+                    Para acompanhar acesse o link: {data['ticket']['url']}
+                                    """
+                                    },
+                                    "delay": 1200,
+                                    "quoted": {
+                                        "key": {
+                                            "remoteJid": "556286342844",
+                                            "fromMe": True,
+                                            "id": "<string>",
+                                            "participant": "<string>"
+                                        }
+                                    },
+                                    "linkPreview": True,
+                                    "mentionsEveryOne": False
+                        }
     
     startChat(payload)
     # print(response.text)
