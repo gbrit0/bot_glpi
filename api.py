@@ -4,8 +4,13 @@ from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
+headers = {
+        "apikey": "07bknevdrycmun144k9plmh",
+        "Content-Type": "application/json"
+    }
+
 @app.route('/webhook', methods=['POST'])
-def handle_post():
+def handle_glpi_webhook():
     data = request.get_json()
 
     if data is None:
@@ -20,6 +25,17 @@ def handle_post():
         return jsonify({"error": f"Missing key: {e}"}), 400
 
     return jsonify({"received_data": data}), 200
+
+
+@app.route('/answers', methods=['POST'])
+def handle_user_list_response():
+    data = request.get_json()
+    if data is None:
+        return jsonify({"error": "Invalid JSON or no JSON received"}), 400
+
+    print(f"Received data: {data}")
+    return jsonify({"received_data": data}), 200
+
 
 def cleanHtml(texto):
     clean = BeautifulSoup(texto, "html.parser")
@@ -58,36 +74,47 @@ Para acompanhar acesse o link: {data['ticket']['url']}
 
 
 
-
-        case "Chamado solucionado":
-           payload = {
-                        "number": f"{data['author']['mobile']}", # destinatário
-                        "textMessage": {
-                            "text":f"""*_CHAMADO SOLUCIONADO_*
-
-Olá, {data['author']['name']}!
-                            
-Seu chamado nº {data['ticket']['id']} foi solucionado!
-
-    *{data['ticket']['solution']['author']}:* "{cleanHtml(data['ticket']['solution']['description'])}"
-
-Para acompanhar acesse o link: {data['ticket']['url']}
-                        """
-                        },
-                        "delay": 1200,
-                        "quoted": {
-                            "key": {
-                                "remoteJid": "556286342844",
-                                "fromMe": True,
-                                "id": "<string>",
-                                "participant": "<string>"
-                            }
-                        },
-                        "linkPreview": True,
-                        "mentionsEveryOne": False
-                }
+            startChat(payload)
             
+        case "Chamado solucionado":
 
+            payload = {
+                "number": f"{data['author']['mobile']}",
+                "listMessage": {
+                    "title": "*_CHAMADO SOLUCIONADO_*",
+                    "description": f"""Olá, {data['author']['name']}!\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\t*{data['ticket']['solution']['author']}:* "{cleanHtml(data['ticket']['solution']['description'])}"\n""",
+                    "buttonText": "Clique aqui para aceitar ou negar a solução",
+                    "footerText": f"footer list\n{data['ticket']['url']}",
+                    "sections": [
+                        {
+                            "title": "Aprovar solução:",
+                            "rows": [
+                                {
+                                    "title": "Sim",
+                                    "description": "A solução foi satisfatória.",
+                                    "rowId": "1"
+                                },
+                                {
+                                    "title": "Não",
+                                    "description": "A solução não foi satisfatória.",
+                                    "rowId": "0"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "options": {
+                    "delay": 1200,
+                    "presence": "composing"
+                },
+                "quoted": {
+                    "key": {
+                        "fromMe": True
+                    }
+                }
+            }
+            
+            sendTicketSolution(payload)
 
 
         case _:
@@ -110,26 +137,27 @@ Para acompanhar acesse o link: {data['ticket']['url']}
                                         "remoteJid": "556286342844",
                                         "fromMe": True,
                                         "id": "<string>",
-                                        "participant": "<string>"
+                                        "participant": {data['author']['id']}
                                     }
                                 },
                                 "linkPreview": True,
                                 "mentionsEveryOne": False
             }
     
-    startChat(payload)
+            startChat(payload)
     # print(response.text)
 
 def startChat(payload):
     url = "http://192.168.15.60:8080/message/sendText/Glpi_GBR"
 
-    headers = {
-        "apikey": "07bknevdrycmun144k9plmh",
-        "Content-Type": "application/json"
-    }
+    
 
     response = requests.request("POST", url, json=payload, headers=headers)
 
+def sendTicketSolution(payload):
+    url = "http://192.168.15.60:8080/chat/fetchProfilePictureUrl/Glpi_GBR"
+
+    response = requests.request("POST", url, json=payload, headers=headers)
 
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port=5000, debug=True)
