@@ -9,6 +9,8 @@ headers = {
         "Content-Type": "application/json"
     }
 
+baseUrl = "http://192.168.15.60:8080"
+
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
     data = request.get_json()
@@ -33,7 +35,9 @@ def handle_user_list_response():
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
-    print(f"Received data: {data}")
+    if data['data']['messageType'] == 'listResponseMessage':
+        print(f"Received data: {data}")
+    
     return jsonify({"received_data": data}), 200
 
 
@@ -46,33 +50,19 @@ def sendMessage(data):
     
         case 'Novo acompanhamento':
             payload = {
-                        "number": f"{data['author']['mobile']}", # destinatário
-                        "textMessage": {
-                            "text":f"""*_NOVO ACOMPANHAMENTO_*
-                            
-Olá, {data['author']['name']}!
-                            
-{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:
-
-    *{data['ticket']['solution']['approval']['author']}:* "{cleanHtml(data['ticket']['solution']['approval']['description'])}"
-
-Para acompanhar acesse o link: {data['ticket']['url']}
-                        """
-                        },
-                        "delay": 1200,
-                        "quoted": {
-                            "key": {
-                                "remoteJid": "556286342844",
-                                "fromMe": True,
-                                "id": "<string>",
-                                "participant": "<string>"
-                            }
-                        },
-                        "linkPreview": True,
-                        "mentionsEveryOne": False
+                "number": f"{data['author']['mobile']}",
+                "textMessage": {
+                    "text":f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* "{cleanHtml(data['ticket']['solution']['approval']['description'])}"\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                },
+                "delay": 1200,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
+                "quoted": {
+                    "key": {
+                        "fromMe": True
+                    }
                 }
-
-
+            }
 
             startChat(payload)
             
@@ -82,9 +72,9 @@ Para acompanhar acesse o link: {data['ticket']['url']}
                 "number": f"{data['author']['mobile']}",
                 "listMessage": {
                     "title": "*_CHAMADO SOLUCIONADO_*",
-                    "description": f"""Olá, {data['author']['name']}!\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\t*{data['ticket']['solution']['author']}:* "{cleanHtml(data['ticket']['solution']['description'])}"\n""",
+                    "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* "{cleanHtml(data['ticket']['solution']['description'])}"\n""",
                     "buttonText": "Clique aqui para aceitar ou negar a solução",
-                    "footerText": f"footer list\n{data['ticket']['url']}",
+                    "footerText": f"Para acompanhar acesse o link:\n{data['ticket']['url']}",
                     "sections": [
                         {
                             "title": "Aprovar solução:",
@@ -120,45 +110,34 @@ Para acompanhar acesse o link: {data['ticket']['url']}
         case _:
             
             payload = {
-                                "number": f"{data['author']['mobile']}", # destinatário
-                                "textMessage": {
-                                    "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*
-
-Olá, {data['author']['name']}!
-                                    
-    {data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}
-
-Para acompanhar acesse o link: {data['ticket']['url']}
-                                """
-                                },
-                                "delay": 1200,
-                                "quoted": {
-                                    "key": {
-                                        "remoteJid": "556286342844",
-                                        "fromMe": True,
-                                        "id": "<string>",
-                                        "participant": {data['author']['id']}
-                                    }
-                                },
-                                "linkPreview": True,
-                                "mentionsEveryOne": False
+                "number": f"{data['author']['mobile']}",
+                "textMessage": {
+                    "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n\t{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                },
+                "delay": 1200,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
+                "quoted": {
+                    "key": {
+                        "fromMe": True
+                    }
+                }
             }
     
             startChat(payload)
     # print(response.text)
 
 def startChat(payload):
-    url = "http://192.168.15.60:8080/message/sendText/Glpi_GBR"
+    url = f"{baseUrl}/message/sendText/Glpi_GBR"
 
-    
 
     response = requests.request("POST", url, json=payload, headers=headers)
 
 def sendTicketSolution(payload):
-    url = "http://192.168.15.60:8080/chat/fetchProfilePictureUrl/Glpi_GBR"
+    url = f"{baseUrl}/message/sendList/Glpi_GBR"
 
     response = requests.request("POST", url, json=payload, headers=headers)
+    # print(response)
 
 if __name__ == '__main__':
    app.run(host='0.0.0.0', port=5000, debug=True)
-
