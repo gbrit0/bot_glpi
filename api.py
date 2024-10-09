@@ -41,7 +41,11 @@ def handle_user_list_response():
     return jsonify({"received_data": data}), 200
 
 
+'<p>asdfsdfa asdfasdf</p>\r\n<ul>\r\n<li>asdfdsaf fdsadf dsadf fdasdf</li>\r\n<li>asdfd</li>\r\n</ul>\r\n<p>sdfsasdf</p>'
+
+
 def cleanHtml(texto):
+    texto = texto.replace("<br>", "\n").replace("<li>", "   * ")
     clean = BeautifulSoup(texto, "html.parser")
     return clean.get_text()
 
@@ -52,7 +56,7 @@ def sendMessage(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "textMessage": {
-                    "text":f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* "{cleanHtml(data['ticket']['solution']['approval']['description'])}"\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                    "text":f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {cleanHtml(data['ticket']['solution']['approval']['description'])}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
                 },
                 "delay": 1200,
                 "linkPreview": True,
@@ -70,9 +74,10 @@ def sendMessage(data):
 
             payload = {
                 "number": f"{data['author']['mobile']}",
+                "ticke_id": f"{data['ticket']['id']}",
                 "listMessage": {
                     "title": "*_CHAMADO SOLUCIONADO_*",
-                    "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* "{cleanHtml(data['ticket']['solution']['description'])}"\n""",
+                    "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* {cleanHtml(data['ticket']['solution']['description'])}\n""",
                     "buttonText": "Clique aqui para aceitar ou negar a solução",
                     "footerText": f"Para acompanhar acesse o link:\n{data['ticket']['url']}",
                     "sections": [
@@ -82,12 +87,12 @@ def sendMessage(data):
                                 {
                                     "title": "Sim",
                                     "description": "A solução foi satisfatória.",
-                                    "rowId": "1"
+                                    "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
                                 },
                                 {
                                     "title": "Não",
                                     "description": "A solução não foi satisfatória.",
-                                    "rowId": "0"
+                                    "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
                                 }
                             ]
                         }
@@ -129,7 +134,6 @@ def sendMessage(data):
 
 def startChat(payload):
     url = f"{baseUrl}/message/sendText/Glpi_GBR"
-
 
     response = requests.request("POST", url, json=payload, headers=headers)
 
