@@ -1,15 +1,10 @@
 from flask import Flask, request, jsonify, Response, make_response
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
-
-headers = {
-        "apikey": "07bknevdrycmun144k9plmh",
-        "Content-Type": "application/json"
-    }
-
-baseUrl = "http://192.168.15.60:8080"
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
@@ -41,7 +36,34 @@ def handle_user_list_response():
     return jsonify({"received_data": data}), 200
 
 
-'<p>asdfsdfa asdfasdf</p>\r\n<ul>\r\n<li>asdfdsaf fdsadf dsadf fdasdf</li>\r\n<li>asdfd</li>\r\n</ul>\r\n<p>sdfsasdf</p>'
+def initGlpiApiSession():
+   glpiApiHeaders = {
+        "Authorization": f"{os.getenv('GLPI_AUTH')}",
+        "App-Token": f"{os.getenv('GLPI_APP_TOKEN')}",
+        "Content-Type": "application/json"
+    }
+
+   url = f"{os.getenv('GLPI_API_BASE_URL')}/initSession/"
+
+   response = requests.request("GET", url, headers=glpiApiHeaders)
+   return response.json()['session_token']
+
+def killGlpiApiSession(session_token):
+   headers = {
+      "Session-Token": f"{session_token}",
+      "App-Token": f"{os.getenv('GLPI_APP_TOKEN')}",
+      "Content-Type": "application/json"
+   }
+
+   url = f"{glpiApiBaseUrl}/killSession"
+
+   response = requests.request("GET", url, headers=headers)
+
+def send_users_ticket_validation(data):
+    session_token = initGlpiApiSession()
+
+
+    killGlpiApiSession(session_token)
 
 
 def cleanHtml(texto):
@@ -133,15 +155,24 @@ def sendMessage(data):
     # print(response.text)
 
 def startChat(payload):
-    url = f"{baseUrl}/message/sendText/Glpi_GBR"
+    url = f"{evolutionApiBaseUrl}/message/sendText/Glpi_GBR"
 
-    response = requests.request("POST", url, json=payload, headers=headers)
+    response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
 
 def sendTicketSolution(payload):
-    url = f"{baseUrl}/message/sendList/Glpi_GBR"
+    url = f"{evolutionApiBaseUrl}/message/sendList/Glpi_GBR"
 
-    response = requests.request("POST", url, json=payload, headers=headers)
+    response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
     # print(response)
 
 if __name__ == '__main__':
-   app.run(host='0.0.0.0', port=5000, debug=True)
+    load_dotenv()
+    evolutionApiHeaders = {
+        "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+
+    evolutionApiBaseUrl = os.getenv('EVOLUTION_API_BASE_URL')
+
+    glpiApiBaseUrl = os.getenv('GLPI_API_BASE_URL')
+    app.run(host='0.0.0.0', port=5000, debug=True)
