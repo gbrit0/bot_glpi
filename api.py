@@ -154,6 +154,29 @@ def sendMessage(data):
             startChat(payload)
     # print(response.text)
 
+def updateMessage(session_token, evolutionApiBaseUrl):
+    evolutionApiHeaders = {
+        "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
+        "Content-Type": "application/json"
+    }
+    # message_id = data['data']['key']['id']
+    url = f"{evolutionApiBaseUrl}/chat/updateMessage/Glpi_GBR"
+
+    payload = {
+        "number":"556286342844",
+        "text":f"""Olá, !\n\nSeu chamado nº  foi solucionado!\n\n\t*AUTOR:* ASDFASDFASDF\n""",
+        "key":{
+            "remoteJid":"556286342844@s.whatsapp.net",
+            "fromMe": True,
+            "id": f"<>"
+        },
+        "status": "SENT"
+        
+    }
+    
+    response = requests.request("PUT", url, json=payload, headers=evolutionApiHeaders)
+    print(response.json())
+
 def startChat(payload):
     url = f"{evolutionApiBaseUrl}/message/sendText/Glpi_GBR"
 
