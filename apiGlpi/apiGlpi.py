@@ -66,6 +66,18 @@ def searchOptions(session_token):
    response = requests.request("GET", url, headers=headers)
    print(response.json())
 
+def searchItems(session_token):
+   headers = {
+      "Session-Token": f"{session_token}",
+      "App-Token": f"{app_token}",
+      "Content-Type": "application/json"
+   }
+
+   url = f"{baseUrl}/search/AllAssets"
+
+   response = requests.request("GET", url, headers=headers)
+   print(response.json())
+
 def getMassiveActions(session_token):
    headers = {
       "Session-Token": f"{session_token}",
@@ -108,7 +120,7 @@ def updateItem(session_token, ticket_id):
 def main():
    session_token = initSession()
 
-   updateItem(session_token)
+   searchItems(session_token)
 
    killSession(session_token)
 
