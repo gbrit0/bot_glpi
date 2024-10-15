@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
+import mysql.connector
 
 app = Flask(__name__)
 
@@ -198,4 +199,14 @@ if __name__ == '__main__':
     evolutionApiBaseUrl = os.getenv('EVOLUTION_API_BASE_URL')
 
     glpiApiBaseUrl = os.getenv('GLPI_API_BASE_URL')
+
+    pool = mysql.connector.pooling.MySQLConnectionPool(
+        pool_name="MySqlPool",
+        pool_size=5,
+        user=os.getenv('GLPI_MYSQL_USER'),
+        password=os.getenv('GLPI_MYSQL_PASSWORD'),
+        host=os.getenv('GLPI_MYSQL_HOST'),
+        database=os.getenv('GLPI_MYSQL_DATABASE')
+    )
+
     app.run(host='0.0.0.0', port=5000, debug=True)
