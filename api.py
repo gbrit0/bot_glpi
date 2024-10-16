@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
 import mysql.connector
+from datetime import datetime
+import json
 
 app = Flask(__name__)
 
@@ -32,6 +34,13 @@ def handle_user_list_response():
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     if data['data']['messageType'] == 'listResponseMessage':
+        # with pool.get_connection() as con:
+        #     with con.cursor() as cursor:
+        #         sql = f"SELECT * FROM log_mensagens WHERE id_mensagem = {data['data']['key']['id']}"
+        #         cursor.execute(sql)
+        #         last_message = cursor.fetchone()
+
+        # if int(data['data']['key']['id']) == cont:
         print(f"Received data: {data}")
     
     return jsonify({"received_data": data}), 200
@@ -86,7 +95,8 @@ def sendMessage(data):
                 "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
-                        "fromMe": True
+                        "fromMe": True,
+                        "type":'Novo acompanhamento'
                     }
                 }
             }
@@ -127,7 +137,8 @@ def sendMessage(data):
                 },
                 "quoted": {
                     "key": {
-                        "fromMe": True
+                        "fromMe": True,
+                        "type":"Chamado solucionado"
                     }
                 }
             }
@@ -147,7 +158,8 @@ def sendMessage(data):
                 "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
-                        "fromMe": True
+                        "fromMe": True,
+                        "type":"Caso geral"
                     }
                 }
             }
@@ -178,16 +190,41 @@ def updateMessage(session_token, evolutionApiBaseUrl):
     response = requests.request("PUT", url, json=payload, headers=evolutionApiHeaders)
     print(response.json())
 
+
 def startChat(payload):
     url = f"{evolutionApiBaseUrl}/message/sendText/Glpi_GBR"
 
     response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
+    data = response.json()
+    if response.status_code == 201:
+        with pool.get_connection() as con:
+            with con.cursor() as cursor:
+                sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                VALUES ('{data['key']['id']}','{payload['number']}','{datetime.now()}','{payload['quoted']['key']['type']}','{payload['textMessage']['text']}');"""
+                try:
+                    cursor.execute(sql)
+                    con.commit()
+                    
+                except mysql.connector.Error as e:
+                    print(f"erro de conexao MySQL: {e}")             
+
 
 def sendTicketSolution(payload):
     url = f"{evolutionApiBaseUrl}/message/sendList/Glpi_GBR"
 
     response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
-    # print(response)
+    data = response.json()
+    if response.status_code == 201:
+        with pool.get_connection() as con:
+            with con.cursor() as cursor:
+                sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                VALUES ('{data['key']['id']}','{payload['number']}','{datetime.now()}','{payload['quoted']['key']['type']}','{json.dumps(payload['listMessage'], ensure_ascii=False)}');"""
+                try:
+                    cursor.execute(sql)
+                    con.commit()
+                    
+                except mysql.connector.Error as e:
+                    print(f"erro de conexao MySQL: {e}")
 
 if __name__ == '__main__':
     load_dotenv()
@@ -201,12 +238,14 @@ if __name__ == '__main__':
     glpiApiBaseUrl = os.getenv('GLPI_API_BASE_URL')
 
     pool = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="MySqlPool",
+        pool_name="botGLPI",
         pool_size=5,
         user=os.getenv('GLPI_MYSQL_USER'),
         password=os.getenv('GLPI_MYSQL_PASSWORD'),
         host=os.getenv('GLPI_MYSQL_HOST'),
-        database=os.getenv('GLPI_MYSQL_DATABASE')
+        database=os.getenv('GLPI_MYSQL_DATABASE'),
+        collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
     )
+    
 
     app.run(host='0.0.0.0', port=5000, debug=True)
