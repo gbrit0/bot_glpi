@@ -34,14 +34,27 @@ def handle_user_list_response():
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     if data['data']['messageType'] == 'listResponseMessage':
-        # with pool.get_connection() as con:
-        #     with con.cursor() as cursor:
-        #         sql = f"SELECT * FROM log_mensagens WHERE id_mensagem = {data['data']['key']['id']}"
-        #         cursor.execute(sql)
-        #         last_message = cursor.fetchone()
+        id_mensagem = data['data']['message']['listResponseMessage']['contextInfo']['stanzaId']
 
-        # if int(data['data']['key']['id']) == cont:
-        print(f"Received data: {data}")
+        sql = f"""SELECT id_mensagem FROM respostas WHERE id_mensagem = '{id_mensagem}'"""
+        with pool.get_connection() as con:
+            with con.cursor() as cursor:
+                cursor.execute(sql)
+                result = cursor.fetchone()
+                
+                if not result:  
+                    sql = f"""INSERT INTO respostas (`id_resposta`, `id_mensagem`, `conteudo`, `data_hora`, `tipo`)
+                    VALUES ('{data['data']['key']['id']}', '{id_mensagem}', '', '{datetime.now()}', '{data['data']['message']['listResponseMessage']['title']}')"""
+
+                    try:
+                        cursor.execute(sql)
+                        con.commit()
+                        
+                    except mysql.connector.Error as e:
+                        print(f"erro de conexao MySQL: {e}")
+
+                    send_users_ticket_validation(data)
+        
     
     return jsonify({"received_data": data}), 200
 
@@ -72,6 +85,35 @@ def killGlpiApiSession(session_token):
 def send_users_ticket_validation(data):
     session_token = initGlpiApiSession()
 
+    ticket_id = data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']
+    resposta_chamado = data['data']['message']['listResponseMessage']['title']
+
+    if resposta_chamado == 'Sim':
+        payload = {
+            "input":{
+                "id":f"{ticket_id}",
+                "status":6
+            }
+        }
+    else:
+        payload = {
+            "input":{
+                "id":f"{ticket_id}",
+                "status":2
+            }
+        }
+
+
+    headers = {
+      "Session-Token": f"{session_token}",
+      "App-Token": f"{app_token}",
+      "Content-Type": "application/json"
+   }
+
+    url = f"{glpiApiBaseUrl}/Ticket/{ticket_id}"
+    
+    response = requests.request("PUT", url, headers=headers, json=payload)
+    print(response.json())
 
     killGlpiApiSession(session_token)
 
@@ -200,7 +242,7 @@ def startChat(payload):
         with pool.get_connection() as con:
             with con.cursor() as cursor:
                 sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
-                VALUES ('{data['key']['id']}','{payload['number']}','{datetime.now()}','{payload['quoted']['key']['type']}','{payload['textMessage']['text']}');"""
+                VALUES ('{data['key']['id']}','{payload['number']}',"{datetime.now()}","{payload['quoted']['key']['type']}","{payload['textMessage']['text']}");"""
                 try:
                     cursor.execute(sql)
                     con.commit()
@@ -214,11 +256,12 @@ def sendTicketSolution(payload):
 
     response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
     data = response.json()
+    # print(data)
     if response.status_code == 201:
         with pool.get_connection() as con:
             with con.cursor() as cursor:
                 sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
-                VALUES ('{data['key']['id']}','{payload['number']}','{datetime.now()}','{payload['quoted']['key']['type']}','{json.dumps(payload['listMessage'], ensure_ascii=False)}');"""
+                VALUES ('{data['key']['id']}','{payload['number']}',"{datetime.now()}","{payload['quoted']['key']['type']}","{json.dumps(payload['listMessage'], ensure_ascii=False)}");"""
                 try:
                     cursor.execute(sql)
                     con.commit()
