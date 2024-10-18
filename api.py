@@ -19,7 +19,7 @@ def handle_glpi_webhook():
     print(f"Received data: {data}")
 
     try:
-        if data['ticket']['lastupdater'] != data['author']['name']:
+        if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
             sendMessage(data)
     except KeyError as e:
         return jsonify({"error": f"Missing key: {e}"}), 400
@@ -42,18 +42,19 @@ def handle_user_list_response():
                 cursor.execute(sql)
                 result = cursor.fetchone()
                 
-                if not result:  
+                if not result:
+                    send_users_ticket_validation(data)
+                    values = [str(data['data']['key']['id']), str(id_mensagem), '', str(datetime.now()), str(data['data']['message']['listResponseMessage']['title'])]
                     sql = f"""INSERT INTO respostas (`id_resposta`, `id_mensagem`, `conteudo`, `data_hora`, `tipo`)
-                    VALUES ('{data['data']['key']['id']}', '{id_mensagem}', '', '{datetime.now()}', '{data['data']['message']['listResponseMessage']['title']}')"""
+                    VALUES (%s, %s, %s, %s, %s)"""
 
                     try:
-                        cursor.execute(sql)
+                        cursor.execute(sql, values)
                         con.commit()
                         
                     except mysql.connector.Error as e:
                         print(f"erro de conexao MySQL: {e}")
 
-                    send_users_ticket_validation(data)
         
     
     return jsonify({"received_data": data}), 200
@@ -106,14 +107,14 @@ def send_users_ticket_validation(data):
 
     headers = {
       "Session-Token": f"{session_token}",
-      "App-Token": f"{app_token}",
+      "App-Token": f"{os.getenv('GLPI_APP_TOKEN')}",
       "Content-Type": "application/json"
    }
 
     url = f"{glpiApiBaseUrl}/Ticket/{ticket_id}"
     
     response = requests.request("PUT", url, headers=headers, json=payload)
-    print(response.json())
+    # print(response.json())
 
     killGlpiApiSession(session_token)
 
@@ -125,12 +126,12 @@ def cleanHtml(texto):
 
 def sendMessage(data):
     match data['ticket']['action']:
-    
-        case 'Novo acompanhamento':
+        
+        case 'Novo chamado':
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "textMessage": {
-                    "text":f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {cleanHtml(data['ticket']['solution']['approval']['description'])}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                    "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
                 },
                 "delay": 1200,
                 "linkPreview": True,
@@ -138,12 +139,13 @@ def sendMessage(data):
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":'Novo acompanhamento'
+                        "type":'Novo chamado'
                     }
                 }
             }
 
             startChat(payload)
+    
             
         case "Chamado solucionado":
 
@@ -239,12 +241,13 @@ def startChat(payload):
     response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
     data = response.json()
     if response.status_code == 201:
+        values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['textMessage']['text'])]
         with pool.get_connection() as con:
             with con.cursor() as cursor:
                 sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
-                VALUES ('{data['key']['id']}','{payload['number']}',"{datetime.now()}","{payload['quoted']['key']['type']}","{payload['textMessage']['text']}");"""
+                VALUES (%s, %s, %s, %s, %s);"""
                 try:
-                    cursor.execute(sql)
+                    cursor.execute(sql, values)
                     con.commit()
                     
                 except mysql.connector.Error as e:
@@ -258,12 +261,13 @@ def sendTicketSolution(payload):
     data = response.json()
     # print(data)
     if response.status_code == 201:
+        values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), json.dumps(payload['listMessage'], ensure_ascii=False)]
         with pool.get_connection() as con:
             with con.cursor() as cursor:
                 sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
-                VALUES ('{data['key']['id']}','{payload['number']}',"{datetime.now()}","{payload['quoted']['key']['type']}","{json.dumps(payload['listMessage'], ensure_ascii=False)}");"""
+                VALUES (%s, %s, %s, %s, %s);"""
                 try:
-                    cursor.execute(sql)
+                    cursor.execute(sql, values)
                     con.commit()
                     
                 except mysql.connector.Error as e:
