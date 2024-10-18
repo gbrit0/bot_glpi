@@ -131,7 +131,7 @@ def sendMessage(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "textMessage": {
-                    "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                    "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp.\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
                 },
                 "delay": 1200,
                 "linkPreview": True,
@@ -145,7 +145,25 @@ def sendMessage(data):
             }
 
             startChat(payload)
-    
+
+        case 'Novo acompanhamento':
+            payload = {
+                "number": f"{data['author']['mobile']}",
+                "textMessage": {
+                    "text":f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {cleanHtml(data['ticket']['solution']['approval']['description'])}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                },
+                "delay": 1200,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
+                "quoted": {
+                    "key": {
+                        "fromMe": True,
+                        "type":'Novo acompanhamento'
+                    }
+                }
+            }
+
+            startChat(payload)
             
         case "Chamado solucionado":
 
@@ -195,7 +213,7 @@ def sendMessage(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "textMessage": {
-                    "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n\t{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                    "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\n\t*status:* {data['ticket']['status']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
                 },
                 "delay": 1200,
                 "linkPreview": True,
