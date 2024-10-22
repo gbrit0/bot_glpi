@@ -11,8 +11,9 @@ app = Flask(__name__)
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
+    print("entrou em handle_glpi_webhook")
     data = request.get_json()
-
+    print("saiu de request.get_json()")
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -125,6 +126,7 @@ def cleanHtml(texto):
     return clean.get_text()
 
 def sendMessage(data):
+    print("entrou no sendMessage")
     match data['ticket']['action']:
         
         case 'Novo chamado':
@@ -254,6 +256,7 @@ def updateMessage(session_token, evolutionApiBaseUrl):
 
 
 def startChat(payload):
+    print("entrou no startChat")
     url = f"{evolutionApiBaseUrl}/message/sendText/Glpi_GBR"
 
     response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
@@ -273,6 +276,7 @@ def startChat(payload):
 
 
 def sendTicketSolution(payload):
+    print("entrou no sendTicketSOlution")
     url = f"{evolutionApiBaseUrl}/message/sendList/Glpi_GBR"
 
     response = requests.request("POST", url, json=payload, headers=evolutionApiHeaders)
@@ -313,4 +317,4 @@ if __name__ == '__main__':
     )
     
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=52001, debug=True)
