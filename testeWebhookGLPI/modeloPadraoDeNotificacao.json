@@ -1,45 +1,47 @@
 {
-   "author":{
-      "name":"##FOREACH FIRST 1 authors####author.name####ENDFOREACHauthors##",
+   "author": {
+      "id": "##FOREACH FIRST 1 authors####author.id####ENDFOREACHauthors##",
+      "name": "##FOREACH FIRST 1 authors####author.name####ENDFOREACHauthors##",
       "mobile": "##FOREACH FIRST 1 authors####author.mobile####ENDFOREACHauthors##"
    },
-   "ticket":{
-      "action":"##ticket.action##",
-      "category":"##ticket.category##",
-      "closedate":"##ticket.closedate##",
-      "creationdate":"##ticket.creationdate##",
-      "entity":"##ticket.entity##",
-      "globalvalidation":"##ticket.globalvalidation##",
-      "id":"##ticket.id##",
-      "lastupdater":"##ticket.lastupdater##",
-      "openbyuser":"##ticket.openbyuser##",
-      "shortentity":"##ticket.shortentity##",
-      "solution":{
-         "approval":{
-            "author":"##ticket.solution.approval.author##",
-            "date":"##ticket.solution.approval.date##",
-            "description":"##ticket.solution.approval.description##"
+   "ticket": {
+      "action": "##ticket.action##",
+      "category": "##ticket.category##",
+      "closedate": "##ticket.closedate##",
+      "creationdate": "##ticket.creationdate##",
+      "entity": "##ticket.entity##",
+      "globalvalidation": "##ticket.globalvalidation##",
+      "id": "##ticket.id##",
+      "lastupdater": "##ticket.lastupdater##",
+      "openbyuser": "##ticket.openbyuser##",
+      "shortentity": "##ticket.shortentity##",
+      "solution": {
+         "approval": {
+            "author": "##ticket.solution.approval.author##",
+            "date": "##ticket.solution.approval.date##",
+            "description": "##ticket.solution.approval.description##"
          },
-         "author":"##ticket.solution.author##",
-         "description":"##ticket.solution.description##",
-         "type":"##ticket.solution.type##"
+         "author": "##ticket.solution.author##",
+         "description": "##ticket.solution.description##",
+         "type": "##ticket.solution.type##"
       },
-      "solvedate":"##ticket.solvedate##",
-      "status":"##ticket.status##",
-      "title":"##ticket.title##",
-      "url":"##glpi.url##/index.php?redirect=ticket_##ticket.id##"
+      "solvedate": "##ticket.solvedate##",
+      "status": "##ticket.status##",
+      "title": "##ticket.title##",
+      "url": "##glpi.url##/index.php?redirect=ticket_##ticket.id##"
    },
-   "validations":{
-      "answer":{
+   "validations": {
+      "answer": {
          "title": "##FOREACH LAST 1 validations####validation.answer.title## ##ENDFOREACHvalidations##"
       },
-      "author":"##FOREACH LAST 1 validations####validation.author####ENDFOREACHvalidations##",
-      "commentsubmission":"##FOREACH LAST 1 validations####validation.commentsubmission####ENDFOREACHvalidations##",
-      "commentvalidation":"##FOREACH LAST 1 validations####validation.commentvalidation####ENDFOREACHvalidations##",
-      "status":"##FOREACH LAST 1 validations####validation.status####ENDFOREACHvalidations##",
-      "submission":"##FOREACH LAST 1 validations####validation.submission.title####ENDFOREACHvalidations##",
-      "submissiondate":"##FOREACH LAST 1 validations####validation.submissiondate####ENDFOREACHvalidations##",
-      "validationdate":"##FOREACH LAST 1 validations####validation.validationdate####ENDFOREACHvalidations##",
-      "validator":"##FOREACH LAST 1 validations####validation.validator####ENDFOREACHvalidations##"
-   }
+      "author": "##FOREACH LAST 1 validations####validation.author####ENDFOREACHvalidations##",
+      "commentsubmission": "##FOREACH LAST 1 validations####validation.commentsubmission####ENDFOREACHvalidations##",
+      "commentvalidation": "##FOREACH LAST 1 validations####validation.commentvalidation####ENDFOREACHvalidations##",
+      "status": "##FOREACH LAST 1 validations####validation.status####ENDFOREACHvalidations##",
+      "submission": "##FOREACH LAST 1 validations####validation.submission.title####ENDFOREACHvalidations##",
+      "submissiondate": "##FOREACH LAST 1 validations####validation.submissiondate####ENDFOREACHvalidations##",
+      "validationdate": "##FOREACH LAST 1 validations####validation.validationdate####ENDFOREACHvalidations##",
+      "validator": "##FOREACH LAST 1 validations####validation.validator####ENDFOREACHvalidations##"
+   },
+   "documents": "##FOREACH LAST 1 documents####ticket.numberofdocuments####ENDFOREACHdocuments##"
 }
