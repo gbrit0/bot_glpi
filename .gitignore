@@ -2,9 +2,11 @@
 *.csv
 *.env
 /__pycache__
-/teste_evolution
+/teste_evolutionFaz 
 /testeTypebotDocker
 /testeWebhookGLPI
 /documentos_desenvolvimento
 /bot_danilo
 /API
+*.config.py
+*.json

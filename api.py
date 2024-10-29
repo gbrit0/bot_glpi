@@ -6,6 +6,7 @@ import os
 import mysql.connector
 from datetime import datetime
 import json
+from datetime import datetime
 
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
@@ -26,26 +27,28 @@ def handle_glpi_webhook():
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
-    print(f"Received data: {data}")
+    print(f"{datetime.now()}\t/webhook\tReceived data: {data}")
 
     try:
-        if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
+        # if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
+        if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
             send_message(data)
     except KeyError as e:
         return jsonify({"error": f"Missing key: {e}"}), 400
+    
 
-    return jsonify({"received_data": data}), 200
+    return jsonify("received_data"), 200
 
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
     data = request.get_json()
-    print(data)
+    print(f"{datetime.now()}\t/answers\tReceived data: {data}")
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     if data['data']['messageType'] != 'listResponseMessage':
-        return jsonify({"received_data": data}), 200
+        return jsonify("received_data"), 200
 
     id_mensagem = data['data']['message']['listResponseMessage']['contextInfo']['stanzaId']
 
@@ -70,7 +73,7 @@ def handle_user_list_response():
 
         
     
-    return jsonify({"received_data": data}), 200
+    return jsonify("received_data"), 200
 
 
 def init_glpi_api_session():
@@ -278,15 +281,19 @@ def start_chat(payload):
         url, 
         json=payload, 
         headers={
-            "apikey": f"{str(os.getenv('EVOLUTION_API_KEY'))}",
+            "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
             "Content-Type": "application/json"
         }
     )
+    
     data = response.json()
+    # print(data)
     if response.status_code == 201:
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['textMessage']['text'])]
         with pool.get_connection() as con:
+            # print("conectado na pool")
             with con.cursor() as cursor:
+                # print("conectado no cursor")
                 sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
                 VALUES (%s, %s, %s, %s, %s);"""
                 try:
@@ -335,15 +342,15 @@ if __name__ == '__main__':
 
     glpiApiBaseUrl = os.getenv('GLPI_API_BASE_URL')
 
-    pool = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="botGLPI",
-        pool_size=5,
-        user=os.getenv('GLPI_MYSQL_USER'),
-        password=os.getenv('GLPI_MYSQL_PASSWORD'),
-        host=os.getenv('GLPI_MYSQL_HOST'),
-        database=os.getenv('GLPI_MYSQL_DATABASE'),
-        collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
-    )
+    # pool = mysql.connector.pooling.MySQLConnectionPool(
+    #     pool_name="botGLPI",
+    #     pool_size=5,
+    #     user=os.getenv('GLPI_MYSQL_USER'),
+    #     password=os.getenv('GLPI_MYSQL_PASSWORD'),
+    #     host=os.getenv('GLPI_MYSQL_HOST'),
+    #     database=os.getenv('GLPI_MYSQL_DATABASE'),
+    #     collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
+    # )
     
 
     # app.run(host='0.0.0.0', port=52001, debug=True)
