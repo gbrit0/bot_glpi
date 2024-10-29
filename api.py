@@ -27,7 +27,7 @@ def handle_glpi_webhook():
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
-    print(f"{datetime.now()}\t/webhook\tReceived data: {data}")
+    print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
 
     try:
         # if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
@@ -43,7 +43,7 @@ def handle_glpi_webhook():
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
     data = request.get_json()
-    print(f"{datetime.now()}\t/answers\tReceived data: {data}")
+    print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -69,7 +69,9 @@ def handle_user_list_response():
                     con.commit()
                     
                 except mysql.connector.Error as e:
-                    print(f"erro de conexao MySQL: {e}")
+                    print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                except Exception as e:
+                    print(f"{datetime.now()}\terro: {e}")
 
         
     
@@ -301,7 +303,9 @@ def start_chat(payload):
                     con.commit()
                     
                 except mysql.connector.Error as e:
-                    print(f"erro de conexao MySQL: {e}")             
+                    print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                except Exception as e:
+                    print(f"{datetime.now()}\terro: {e}")             
 
 
 def send_ticket_solution(payload):
@@ -329,7 +333,9 @@ def send_ticket_solution(payload):
                     con.commit()
                     
                 except mysql.connector.Error as e:
-                    print(f"erro de conexao MySQL: {e}")
+                    print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                except Exception as e:
+                    print(f"{datetime.now()}\terro: {e}")
 
 if __name__ == '__main__':
     load_dotenv()
