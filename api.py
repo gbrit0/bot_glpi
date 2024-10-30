@@ -30,8 +30,8 @@ def handle_glpi_webhook():
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
 
     try:
-        # if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
-        if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
+        if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
+        # if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
             send_message(data)
     except KeyError as e:
         return jsonify({"error": f"Missing key: {e}"}), 400
@@ -43,7 +43,8 @@ def handle_glpi_webhook():
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
     data = request.get_json()
-    print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
+    action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
+    print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
