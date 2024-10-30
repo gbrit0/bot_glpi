@@ -27,7 +27,7 @@ def handle_glpi_webhook():
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
-    print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
+    # print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
 
     try:
         if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
@@ -43,8 +43,8 @@ def handle_glpi_webhook():
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
     data = request.get_json()
-    action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-    print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+    # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
+    # print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -115,7 +115,7 @@ def send_users_ticket_validation(data):
                 "status":6
             }
         }
-    else:
+    if resposta_chamado == "Não":
         payload = {
             "input":{
                 "id":f"{ticket_id}",
