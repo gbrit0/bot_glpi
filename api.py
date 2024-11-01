@@ -42,38 +42,41 @@ def handle_glpi_webhook():
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
-    data = request.get_json()
-    # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-    # print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
-    if data is None:
-        return jsonify({"error": "Invalid JSON or no JSON received"}), 400
+    try:
+        data = request.get_json()
+        print(data)
+        # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
+        # print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        if data is None:
+            return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
-    if data['data']['messageType'] != 'listResponseMessage':
-        return jsonify("received_data"), 200
+        if data['data']['messageType'] != 'listResponseMessage':
+            return jsonify("received_data"), 200
 
-    id_mensagem = data['data']['message']['listResponseMessage']['contextInfo']['stanzaId']
+        id_mensagem = data['data']['message']['listResponseMessage']['contextInfo']['stanzaId']
 
-    sql = f"""SELECT id_mensagem FROM respostas WHERE id_mensagem = '{id_mensagem}'"""
-    with pool.get_connection() as con:
-        with con.cursor() as cursor:
-            cursor.execute(sql)
-            result = cursor.fetchone()
-            
-            if not result:
-                send_users_ticket_validation(data)
-                values = [str(data['data']['key']['id']), str(id_mensagem), '', str(datetime.now()), str(data['data']['message']['listResponseMessage']['title'])]
-                sql = f"""INSERT INTO respostas (`id_resposta`, `id_mensagem`, `conteudo`, `data_hora`, `tipo`)
-                VALUES (%s, %s, %s, %s, %s)"""
+        sql = f"""SELECT id_mensagem FROM respostas WHERE id_mensagem = '{id_mensagem}'"""
+        with pool.get_connection() as con:
+            with con.cursor() as cursor:
+                cursor.execute(sql)
+                result = cursor.fetchone()
+                
+                if not result:
+                    send_users_ticket_validation(data)
+                    values = [str(data['data']['key']['id']), str(id_mensagem), '', str(datetime.now()), str(data['data']['message']['listResponseMessage']['title'])]
+                    sql = f"""INSERT INTO respostas (`id_resposta`, `id_mensagem`, `conteudo`, `data_hora`, `tipo`)
+                    VALUES (%s, %s, %s, %s, %s)"""
 
-                try:
-                    cursor.execute(sql, values)
-                    con.commit()
-                    
-                except mysql.connector.Error as e:
-                    print(f"{datetime.now()}\terro de conexao MySQL: {e}")
-                except Exception as e:
-                    print(f"{datetime.now()}\terro: {e}")
-
+                    try:
+                        cursor.execute(sql, values)
+                        con.commit()
+                        
+                    except mysql.connector.Error as e:
+                        print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                    except Exception as e:
+                        print(f"{datetime.now()}\terro: {e}")
+    except Exception as e:
+        print(e)
         
     
     return jsonify("received_data"), 200
