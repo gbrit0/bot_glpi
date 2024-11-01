@@ -1,11 +1,10 @@
 import requests
 import base64
 
-baseUrl = 'http://192.168.15.60/apirest.php'
+baseUrl = 'localhost/apirest.php'
 
-user_token = "L6an8rJwuy1bYjHwx72a6ytdLwz80B7aSWoNc1yW"
-app_token = "iXrMsWsxvJoF2ikQsPLFa8W8yFv9JZQnWxnBkjBG"
-auth = "user_token L6an8rJwuy1bYjHwx72a6ytdLwz80B7aSWoNc1yW"
+app_token = "<app_token>"
+auth = "user_token <user_token>"
 
 def initSession():
    headers = {
