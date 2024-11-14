@@ -44,7 +44,7 @@ def handle_glpi_webhook():
 def handle_user_list_response():
     try:
         data = request.get_json()
-        print(data)
+        # print(data)
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
         # print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
         if data is None:
