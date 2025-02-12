@@ -10,24 +10,33 @@ from datetime import datetime
 
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="botGLPI",
-        pool_size=5,
-        user=os.getenv('GLPI_MYSQL_USER'),
-        password=os.getenv('GLPI_MYSQL_PASSWORD'),
-        host=os.getenv('GLPI_MYSQL_HOST'),
-        database=os.getenv('GLPI_MYSQL_DATABASE'),
-        collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
+    pool_name="botGLPI",
+    pool_size=5,
+    user=os.getenv('GLPI_MYSQL_USER'),
+    password=os.getenv('GLPI_MYSQL_PASSWORD'),
+    host=os.getenv('GLPI_MYSQL_HOST'),
+    database=os.getenv('GLPI_MYSQL_DATABASE'),
+    collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
 )
 
 app = Flask(__name__)
 
+# @app.route('/')
+# def tudo():
+#     data = request.get_json()
+#     print(data)
+#     print(request.access_route)
+
+    # return jsonify("OK"), 200
+
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
     data = request.get_json()
+    print(data)
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
-    # print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
+    print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
 
     try:
         if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
@@ -44,9 +53,9 @@ def handle_glpi_webhook():
 def handle_user_list_response():
     try:
         data = request.get_json()
-        # print(data)
+        print(data)
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-        # print(f"{datetime.now()}\t/answers\taction: {action}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
         if data is None:
             return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -75,8 +84,11 @@ def handle_user_list_response():
                         print(f"{datetime.now()}\terro de conexao MySQL: {e}")
                     except Exception as e:
                         print(f"{datetime.now()}\terro: {e}")
+                    finally:
+                        exit()
     except Exception as e:
         print(e)
+    
         
     
     return jsonify("received_data"), 200
@@ -363,4 +375,4 @@ if __name__ == '__main__':
     # )
     
 
-    # app.run(host='0.0.0.0', port=52001, debug=True)
+    app.run(host='0.0.0.0', port=52001, debug=True)
