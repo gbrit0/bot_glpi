@@ -10,3 +10,4 @@
 /API
 *.config.py
 *.log
+*.swp
