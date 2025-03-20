@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 from datetime import datetime
 
+load_dotenv(override=True) 
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="botGLPI",
@@ -21,13 +22,13 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
 
 app = Flask(__name__)
 
-# @app.route('/')
-# def tudo():
-#     data = request.get_json()
-#     print(data)
-#     print(request.access_route)
+@app.route('/', methods=['GET', 'POST'])
+def tudo():
+    data = request.get_json()
+    print(data)
+    print(request.access_route)
 
-    # return jsonify("OK"), 200
+    return jsonify("OK"), 200
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
@@ -47,7 +48,6 @@ def handle_glpi_webhook():
     
 
     return jsonify("received_data"), 200
-
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
@@ -73,7 +73,7 @@ def handle_user_list_response():
                 if not result:
                     send_users_ticket_validation(data)
                     values = [str(data['data']['key']['id']), str(id_mensagem), '', str(datetime.now()), str(data['data']['message']['listResponseMessage']['title'])]
-                    sql = f"""INSERT INTO respostas (`id_resposta`, `id_mensagem`, `conteudo`, `data_hora`, `tipo`)
+                    sql = f"""INSERT INTO u629942907_glpi.respostas (`id_resposta`, `id_mensagem`, `conteudo`, `data_hora`, `tipo`)
                     VALUES (%s, %s, %s, %s, %s)"""
 
                     try:
@@ -92,7 +92,6 @@ def handle_user_list_response():
         
     
     return jsonify("received_data"), 200
-
 
 def init_glpi_api_session():
    glpiApiHeaders = {
@@ -151,7 +150,6 @@ def send_users_ticket_validation(data):
     # print(response.json())
 
     kill_glpi_api_session(session_token)
-
 
 def clean_html(texto):
     texto = texto.replace("<br>", "\n").replace("<li>", "   * ")
@@ -312,7 +310,7 @@ def start_chat(payload):
             # print("conectado na pool")
             with con.cursor() as cursor:
                 # print("conectado no cursor")
-                sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
                 VALUES (%s, %s, %s, %s, %s);"""
                 try:
                     cursor.execute(sql, values)
@@ -342,7 +340,7 @@ def send_ticket_solution(payload):
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), json.dumps(payload['listMessage'], ensure_ascii=False)]
         with pool.get_connection() as con:
             with con.cursor() as cursor:
-                sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
                 VALUES (%s, %s, %s, %s, %s);"""
                 try:
                     cursor.execute(sql, values)
@@ -354,7 +352,7 @@ def send_ticket_solution(payload):
                     print(f"{datetime.now()}\terro: {e}")
 
 if __name__ == '__main__':
-    load_dotenv()
+    
     evolutionApiHeaders = {
         "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
         "Content-Type": "application/json"
@@ -374,5 +372,7 @@ if __name__ == '__main__':
     #     collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
     # )
     
-
-    app.run(host='0.0.0.0', port=52001, debug=True)
+    # with pool.get_connection() as con:
+    #     with con.cursor() as cursor:
+    #         print('conectado com sucesso na base de daos nova do glpi')
+    app.run(host='0.0.0.0', port=25000, debug=True)
