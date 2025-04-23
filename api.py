@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 from datetime import datetime
 
+load_dotenv(override=True)
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="botGLPI",
@@ -15,6 +16,7 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
     user=os.getenv('GLPI_MYSQL_USER'),
     password=os.getenv('GLPI_MYSQL_PASSWORD'),
     host=os.getenv('GLPI_MYSQL_HOST'),
+    port=os.getenv('GLPI_MYSQL_PORT'),
     database=os.getenv('GLPI_MYSQL_DATABASE'),
     collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
 )
@@ -32,7 +34,8 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
     data = request.get_json()
-    print(data)
+    # print(data)
+    # print(f'request: {request}')
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -51,11 +54,13 @@ def handle_glpi_webhook():
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
+    # print("handle_user_list_response\n")
     try:
         data = request.get_json()
-        print(data)
+        # print(f'request.get_json(): {request.get_json()}\n')
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-        print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        # print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        
         if data is None:
             return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -118,6 +123,7 @@ def kill_glpi_api_session(session_token):
    response = requests.request("GET", url, headers=headers)
 
 def send_users_ticket_validation(data):
+    # print("entrou em send_users_ticket_validation")
     session_token = init_glpi_api_session()
 
     ticket_id = data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']
@@ -148,7 +154,7 @@ def send_users_ticket_validation(data):
     url = f"{os.getenv('GLPI_API_BASE_URL')}/Ticket/{ticket_id}"
     
     response = requests.request("PUT", url, headers=headers, json=payload)
-    # print(response.json())
+    # print(f'response da api glpi: {response.json()}')
 
     kill_glpi_api_session(session_token)
 
@@ -312,7 +318,7 @@ def start_chat(payload):
             # print("conectado na pool")
             with con.cursor() as cursor:
                 # print("conectado no cursor")
-                sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
                 VALUES (%s, %s, %s, %s, %s);"""
                 try:
                     cursor.execute(sql, values)
@@ -325,6 +331,8 @@ def start_chat(payload):
 
 
 def send_ticket_solution(payload):
+    # print("send_ticket_solution")
+
     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/Glpi_GBR"
 
     response = requests.request(
@@ -342,7 +350,7 @@ def send_ticket_solution(payload):
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), json.dumps(payload['listMessage'], ensure_ascii=False)]
         with pool.get_connection() as con:
             with con.cursor() as cursor:
-                sql=f"""INSERT INTO `glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
                 VALUES (%s, %s, %s, %s, %s);"""
                 try:
                     cursor.execute(sql, values)
@@ -354,7 +362,7 @@ def send_ticket_solution(payload):
                     print(f"{datetime.now()}\terro: {e}")
 
 if __name__ == '__main__':
-    load_dotenv()
+    load_dotenv(override=True)
     evolutionApiHeaders = {
         "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
         "Content-Type": "application/json"

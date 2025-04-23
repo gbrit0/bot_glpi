@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/zsh
 cd /home/bot/glpi
 while :
 do
