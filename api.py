@@ -416,4 +416,4 @@ if __name__ == '__main__':
     # with pool.get_connection() as con:
     #     with con.cursor() as cursor:
     #         print('conectado com sucesso na base de daos nova do glpi')
-    app.run(host='0.0.0.0', port=8001, debug=True)
+    app.run(host='0.0.0.0', port=52001, debug=True)
