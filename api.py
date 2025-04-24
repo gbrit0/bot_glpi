@@ -6,7 +6,7 @@ import os
 import mysql.connector
 from datetime import datetime
 import json
-from datetime import datetime
+from threading import Thread
 
 load_dotenv(override=True) 
 
@@ -21,6 +21,12 @@ pool = mysql.connector.pooling.MySQLConnectionPool(
 )
 
 app = Flask(__name__)
+
+def send_update_protheus_async(data):
+    try:
+        send_update_protheus(data)
+    except Exception as e:
+        print(f"Erro ao processar send_update_protheus: {e}")
 
 @app.route('/', methods=['GET', 'POST'])
 def tudo():
@@ -38,10 +44,16 @@ def handle_glpi_webhook():
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
-
     try:
-        if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
-        # if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
+        if data['ticket'].get('observergroups') == "Protheus": # notificacao_protheus ->> Mudar em produção
+            # Inicia a thread e responde imediatamente
+            thread = Thread(target=send_update_protheus_async, args=(data,))
+            thread.start()
+
+            return jsonify("Request received"), 200
+
+        elif data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
+            # if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
             send_message(data)
     except KeyError as e:
         return jsonify({"error": f"Missing key: {e}"}), 400
@@ -53,7 +65,7 @@ def handle_glpi_webhook():
 def handle_user_list_response():
     try:
         data = request.get_json()
-        print(data)
+        # print(data)
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
         print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
         if data is None:
@@ -92,6 +104,32 @@ def handle_user_list_response():
         
     
     return jsonify("received_data"), 200
+
+def send_update_protheus(data):
+    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '33';"
+    with pool.get_connection() as con:
+        with con.cursor() as cursor:
+            cursor.execute(sql)
+            usuarios = cursor.fetchall()
+
+    for usuario in usuarios:
+
+        payload = {
+            "number": f"{usuario[1]}",
+            "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['content'])}""",
+            "delay": 1200,
+            "linkPreview": True,
+            "mentionsEveryOne": False,
+            "quoted": {
+                "key": {
+                    "fromMe": True,
+                    "type":'Atualização no Protheus',
+                    "id": ""
+                }
+            }
+        }
+
+        start_chat(payload)
 
 def init_glpi_api_session():
    glpiApiHeaders = {
@@ -162,16 +200,15 @@ def send_message(data):
         case 'Novo chamado':
             payload = {
                 "number": f"{data['author']['mobile']}",
-                "textMessage": {
-                    "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp.\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
-                },
+                "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp.\n\nPara acompanhar acesse o link: {data['ticket']['url']}""",
                 "delay": 1200,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":'Novo chamado'
+                        "type":'Novo chamado',
+                        "id": ""
                     }
                 }
             }
@@ -185,16 +222,15 @@ def send_message(data):
                 text = f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {clean_html(data['ticket']['solution']['approval']['description'])}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
             payload = {
                 "number": f"{data['author']['mobile']}",
-                "textMessage": {
-                    "text":f"{text}"
-                },
+                "text":f"{text}",
                 "delay": 1200,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":'Novo acompanhamento'
+                        "type":'Novo acompanhamento',
+                        "id": ""
                     }
                 }
             }
@@ -248,16 +284,15 @@ def send_message(data):
             
             payload = {
                 "number": f"{data['author']['mobile']}",
-                "textMessage": {
-                    "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\n\t*status:* {data['ticket']['status']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
-                },
+                "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\n\t*status:* {data['ticket']['status']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}""",
                 "delay": 1200,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":"Caso geral"
+                        "type":"Caso geral",
+                        "id": ""
                     }
                 }
             }
@@ -271,7 +306,7 @@ def send_message(data):
 #         "Content-Type": "application/json"
 #     }
 #     # message_id = data['data']['key']['id']
-#     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/chat/updateMessage/Glpi_GBR"
+#     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/chat/updateMessage/{os.getenv('EVOLUTION_INSTANCE')}"
 
 #     payload = {
 #         "number":"556286342844",
@@ -290,7 +325,8 @@ def send_message(data):
 
 
 def start_chat(payload):
-    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendText/Glpi_GBR"
+    # print("Entrou em start_chat")
+    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendText/{os.getenv('EVOLUTION_INSTANCE')}"
 
     response = requests.request(
         "POST", 
@@ -303,9 +339,9 @@ def start_chat(payload):
     )
     
     data = response.json()
-    # print(data)
+    print(data)
     if response.status_code == 201:
-        values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['textMessage']['text'])]
+        values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['text'])]
         with pool.get_connection() as con:
             # print("conectado na pool")
             with con.cursor() as cursor:
@@ -323,7 +359,7 @@ def start_chat(payload):
 
 
 def send_ticket_solution(payload):
-    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/Glpi_GBR"
+    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/{os.getenv('EVOLUTION_INSTANCE')}"
 
     response = requests.request(
         "POST", 
@@ -375,4 +411,4 @@ if __name__ == '__main__':
     # with pool.get_connection() as con:
     #     with con.cursor() as cursor:
     #         print('conectado com sucesso na base de daos nova do glpi')
-    app.run(host='0.0.0.0', port=25000, debug=True)
+    app.run(host='0.0.0.0', port=8001, debug=True)

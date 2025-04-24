@@ -45,3 +45,52 @@
    },
    "documents": "##FOREACH LAST 1 documents####ticket.numberofdocuments####ENDFOREACHdocuments##"
 }
+
+
+{
+   "author": {
+      "id": "137",
+      "name": "Gabriel  Brito ",
+      "mobile": "556286342844"
+   },
+   "ticket": {
+      "action": "Novo chamado",
+      "category": "Validação e Teste",
+      "closedate": "",
+      "creationdate": "23-04-2025 10:28",
+      "entity": "BRG Geradores",
+      "globalvalidation": "Não está sujeita a aprovação",
+      "id": "0009279",
+      "lastupdater": "Gabriel  Brito ",
+      "openbyuser": "Gabriel  Brito ",
+      "shortentity": "BRG Geradores",
+      "solution": {
+         "approval": {
+            "author": "",
+            "date": "",
+            "description": ""
+         },
+         "author": "",
+         "description": "",
+         "type": ""
+      },
+      "solvedate": "",
+      "status": "Novo",
+      "title": "Teste 10:28",
+      "url": "https://www.brggeradores.com.br/glpi/index.php?redirect=ticket_0009279"
+   },
+   "validations": {
+      "answer": {
+         "title": ""
+      },
+      "author": "",
+      "commentsubmission": "",
+      "commentvalidation": "",
+      "status": "",
+      "submission": "",
+      "submissiondate": "",
+      "validationdate": "",
+      "validator": ""
+   },
+   "documents": ""
+}
