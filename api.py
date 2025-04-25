@@ -29,6 +29,13 @@ def send_update_protheus_async(data):
     except Exception as e:
         print(f"Erro ao processar send_update_protheus: {e}")
 
+def send_ticket_solution_async(data):
+    try:
+        send_ticket_solution(data)
+    except Exception as e:
+        print(f"Erro ao processar send_ticket_solution: {e}")
+
+
 @app.route('/', methods=['GET', 'POST'])
 def tudo():
     data = request.get_json()
@@ -39,15 +46,16 @@ def tudo():
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
+    print('entrou em /webhook')
     data = request.get_json()
-    # print(data)
+    print(data)
     # print(f'request: {request}')
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
     try:
-        if data['ticket'].get('observergroups') == "Protheus": # notificacao_protheus ->> Mudar em produção
+        if data['ticket'].get('observergroups') == "TI > notificacao_protheus": 
             # Inicia a thread e responde imediatamente
             thread = Thread(target=send_update_protheus_async, args=(data,))
             thread.start()
@@ -65,10 +73,10 @@ def handle_glpi_webhook():
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
-    # print("handle_user_list_response\n")
+    print("handle_user_list_response\n")
     try:
         data = request.get_json()
-        # print(data)
+        print(data)
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
         # print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
         
@@ -79,6 +87,7 @@ def handle_user_list_response():
             return jsonify("received_data"), 200
 
         id_mensagem = data['data']['message']['listResponseMessage']['contextInfo']['stanzaId']
+        # print(f"id_mensagem: {id_mensagem}")
 
         sql = f"""SELECT id_mensagem FROM respostas WHERE id_mensagem = '{id_mensagem}'"""
         with pool.get_connection() as con:
@@ -100,8 +109,8 @@ def handle_user_list_response():
                         print(f"{datetime.now()}\terro de conexao MySQL: {e}")
                     except Exception as e:
                         print(f"{datetime.now()}\terro: {e}")
-                    finally:
-                        exit()
+                    # finally:
+                    #     exit()
     except Exception as e:
         print(e)
     
@@ -159,13 +168,14 @@ def kill_glpi_api_session(session_token):
    response = requests.request("GET", url, headers=headers)
 
 def send_users_ticket_validation(data):
-    # print("entrou em send_users_ticket_validation")
+    # print("entrou em send_users_ticket_validation\n")
     session_token = init_glpi_api_session()
-
+    # print(f"Sessão GLPI iniciada. session_token: {session_token}\n")
     ticket_id = data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']
     resposta_chamado = data['data']['message']['listResponseMessage']['title']
 
     if resposta_chamado == 'Sim':
+        # print("resposta_chamado == 'Sim'")
         payload = {
             "input":{
                 "id":f"{ticket_id}",
@@ -190,7 +200,7 @@ def send_users_ticket_validation(data):
     url = f"{os.getenv('GLPI_API_BASE_URL')}/Ticket/{ticket_id}"
     
     response = requests.request("PUT", url, headers=headers, json=payload)
-    # print(f'response da api glpi: {response.json()}')
+    # print(f'response da api glpipara o send_user_ticket_validation: {response.json()}\n')
 
     kill_glpi_api_session(session_token)
 
@@ -244,45 +254,79 @@ def send_message(data):
             
         case "Chamado solucionado":
 
+            # payload = {
+            #     "number": f"{data['author']['mobile']}",
+            #     "ticke_id": f"{data['ticket']['id']}",
+            #     "listMessage": {
+            #         "title": "*_CHAMADO SOLUCIONADO_*",
+            #         "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* {clean_html(data['ticket']['solution']['description'])}\n""",
+            #         "buttonText": "Clique aqui para aceitar ou negar a solução",
+            #         "footerText": f"Para acompanhar acesse o link:\n{data['ticket']['url']}",
+            #         "sections": [
+            #             {
+            #                 "title": "Aprovar solução:",
+            #                 "rows": [
+            #                     {
+            #                         "title": "Sim",
+            #                         "description": "A solução foi satisfatória.",
+            #                         "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
+            #                     },
+            #                     {
+            #                         "title": "Não",
+            #                         "description": "A solução não foi satisfatória.",
+            #                         "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
+            #                     }
+            #                 ]
+            #             }
+            #         ]
+            #     },
+            #     "options": {
+            #         "delay": 1200,
+            #         "presence": "composing"
+            #     },
+            #     "quoted": {
+            #         "key": {
+            #             "fromMe": True,
+            #             "type":"Chamado solucionado",
+            #             "id":""
+            #         }
+            #     }
+            # }
             payload = {
                 "number": f"{data['author']['mobile']}",
-                "ticke_id": f"{data['ticket']['id']}",
-                "listMessage": {
-                    "title": "*_CHAMADO SOLUCIONADO_*",
-                    "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* {clean_html(data['ticket']['solution']['description'])}\n""",
-                    "buttonText": "Clique aqui para aceitar ou negar a solução",
-                    "footerText": f"Para acompanhar acesse o link:\n{data['ticket']['url']}",
-                    "sections": [
-                        {
-                            "title": "Aprovar solução:",
-                            "rows": [
-                                {
-                                    "title": "Sim",
-                                    "description": "A solução foi satisfatória.",
-                                    "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
-                                },
-                                {
-                                    "title": "Não",
-                                    "description": "A solução não foi satisfatória.",
-                                    "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "options": {
-                    "delay": 1200,
-                    "presence": "composing"
-                },
+                "title": "*_CHAMADO SOLUCIONADO_*",
+                "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* {clean_html(data['ticket']['solution']['description'])}\n""",
+                "buttonText": "Clique aqui para aceitar ou negar a solução",
+                "footerText": f"Para acompanhar acesse o link:\n{data['ticket']['url']}",
+                "sections": [
+                    {
+                        "title": "Aprovar solução:",
+                        "rows": [
+                            {
+                                "title": "Sim",
+                                "description": "A solução foi satisfatória.",
+                                "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
+                            },
+                            {
+                                "title": "Não",
+                                "description": "A solução não foi satisfatória.",
+                                "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
+                            }
+                        ]
+                    }
+                ],
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":"Chamado solucionado"
+                        "type":"Chamado solucionado",
+                        "id": ""
                     }
                 }
             }
-            
-            send_ticket_solution(payload)
+            thread = Thread(target=send_ticket_solution_async, args=(payload,))
+            thread.start()
+            # send_ticket_solution(payload)
+            return jsonify("Request received"), 200
 
 
         case _:
@@ -304,30 +348,6 @@ def send_message(data):
     
             start_chat(payload)
     # print(response.text)
-
-# def updateMessage(session_token):
-#     evolutionApiHeaders = {
-#         "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
-#         "Content-Type": "application/json"
-#     }
-#     # message_id = data['data']['key']['id']
-#     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/chat/updateMessage/{os.getenv('EVOLUTION_INSTANCE')}"
-
-#     payload = {
-#         "number":"556286342844",
-#         "text":f"""Olá, !\n\nSeu chamado nº  foi solucionado!\n\n\t*AUTOR:* ASDFASDFASDF\n""",
-#         "key":{
-#             "remoteJid":"556286342844@s.whatsapp.net",
-#             "fromMe": True,
-#             "id": f"<>"
-#         },
-#         "status": "SENT"
-        
-#     }
-    
-#     response = requests.request("PUT", url, json=payload, headers=evolutionApiHeaders)
-#     print(response.json())
-
 
 def start_chat(payload):
     # print("Entrou em start_chat")
@@ -362,9 +382,10 @@ def start_chat(payload):
                 except Exception as e:
                     print(f"{datetime.now()}\terro: {e}")             
 
-
 def send_ticket_solution(payload):
-    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/Glpi_GBR"
+    print("Entrou em send_ticket_solution")
+    print(payload)
+    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/{os.getenv('EVOLUTION_INSTANCE')}"
 
     response = requests.request(
         "POST", 
@@ -376,9 +397,9 @@ def send_ticket_solution(payload):
         }
     )
     data = response.json()
-    # print(data)
+    print(data)
     if response.status_code == 201:
-        values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), json.dumps(payload['listMessage'], ensure_ascii=False)]
+        values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), json.dumps(payload['sections'], ensure_ascii=False)]
         with pool.get_connection() as con:
             with con.cursor() as cursor:
                 sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
@@ -388,9 +409,9 @@ def send_ticket_solution(payload):
                     con.commit()
                     
                 except mysql.connector.Error as e:
-                    print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                    print(f"{datetime.now()}\terro de conexao MySQL: {e}\n")
                 except Exception as e:
-                    print(f"{datetime.now()}\terro: {e}")
+                    print(f"{datetime.now()}\terro: {e}\n")
 
 if __name__ == '__main__':
     
