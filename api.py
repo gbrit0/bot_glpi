@@ -55,14 +55,14 @@ def handle_glpi_webhook():
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
     try:
-        if data['ticket'].get('observergroups') == "notificacao_protheus": 
-            # Inicia a thread e responde imediatamente
-            thread = Thread(target=send_update_protheus_async, args=(data,))
-            thread.start()
+        # if data['ticket'].get('observergroups') == "notificacao_protheus": 
+        #     # Inicia a thread e responde imediatamente
+        #     thread = Thread(target=send_update_protheus_async, args=(data,))
+        #     thread.start()
 
-            return jsonify("Request received"), 200
+        #     return jsonify("Request received"), 200
 
-        elif data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
+        if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
             # if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
             send_message(data)
     except KeyError as e:
