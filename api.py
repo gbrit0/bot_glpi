@@ -55,7 +55,7 @@ def handle_glpi_webhook():
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
     try:
-        if data['ticket'].get('observergroups') == "TI > notificacao_protheus": 
+        if data['ticket'].get('observergroups') == "notificacao_protheus": 
             # Inicia a thread e responde imediatamente
             thread = Thread(target=send_update_protheus_async, args=(data,))
             thread.start()
