@@ -40,7 +40,8 @@ def send_ticket_solution_async(data):
 def tudo():
     data = request.get_json()
     print(data)
-    print(request.access_route)
+    print(f"data['author']['id']: {data['author']['id']}")
+    print(f"type(data['authos']['id']): {type(data['author']['id'])}")
 
     return jsonify("OK"), 200
 
@@ -48,14 +49,14 @@ def tudo():
 def handle_glpi_webhook():
     # print('entrou em /webhook')
     data = request.get_json()
-    # print(data)
+    print(data)
     # print(f'request: {request}')
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
     try:
-        if data['ticket'].get('observergroups') == "notificacao_protheus" and (data['ticket']['action'] == "Novo chamado" or data['ticket']['action'] == "Chamado solucionado") and data['ticket']['id'] in ['2', '183', '233', '329']:
+        if data['ticket'].get('observergroups') == "notificacao_protheus" and (data['ticket']['action'] == "Novo chamado" or data['ticket']['action'] == "Chamado solucionado") and data['author']['id'] in ['2', '183', '233', '329', '137']:
             print("entrou no if de notificação_protheus")
             # Inicia a thread e responde imediatamente
             thread = Thread(target=send_update_protheus_async, args=(data,))
@@ -120,7 +121,7 @@ def handle_user_list_response():
     return jsonify("received_data"), 200
 
 def send_update_protheus(data):
-    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '33';"
+    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '39';"
     with pool.get_connection() as con:
         with con.cursor() as cursor:
             cursor.execute(sql)
