@@ -46,23 +46,24 @@ def tudo():
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
-    print('entrou em /webhook')
+    # print('entrou em /webhook')
     data = request.get_json()
-    print(data)
+    # print(data)
     # print(f'request: {request}')
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
     try:
-        # if data['ticket'].get('observergroups') == "notificacao_protheus": 
-        #     # Inicia a thread e responde imediatamente
-        #     thread = Thread(target=send_update_protheus_async, args=(data,))
-        #     thread.start()
+        if data['ticket'].get('observergroups') == "notificacao_protheus" and (data['ticket']['action'] == "Novo chamado" or data['ticket']['action'] == "Chamado solucionado"):
+            print("entrou no if de notificação_protheus")
+            # Inicia a thread e responde imediatamente
+            thread = Thread(target=send_update_protheus_async, args=(data,))
+            thread.start()
 
-        #     return jsonify("Request received"), 200
+            return jsonify("Request received"), 200
 
-        if data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
+        elif data['ticket']['lastupdater'] != data['author']['name'] or data['ticket']['action'] == "Novo chamado":
             # if data['author']['mobile'] == '556281321017' or data['author']['mobile'] == '556286342844':
             send_message(data)
     except KeyError as e:
@@ -73,7 +74,7 @@ def handle_glpi_webhook():
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
-    print("handle_user_list_response\n")
+    # print("handle_user_list_response\n")
     try:
         data = request.get_json()
         print(data)
@@ -119,28 +120,44 @@ def handle_user_list_response():
     return jsonify("received_data"), 200
 
 def send_update_protheus(data):
-    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '33';"
+    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '39';"
     with pool.get_connection() as con:
         with con.cursor() as cursor:
             cursor.execute(sql)
             usuarios = cursor.fetchall()
 
     for usuario in usuarios:
-
-        payload = {
-            "number": f"{usuario[1]}",
-            "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['content'])}""",
-            "delay": 1200,
-            "linkPreview": True,
-            "mentionsEveryOne": False,
-            "quoted": {
-                "key": {
-                    "fromMe": True,
-                    "type":'Atualização no Protheus',
-                    "id": ""
+        if data['ticket']['action'] == "Novo chamado":
+            payload = {
+                "number": f"{usuario[1]}",
+                "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['content'])}""",
+                "delay": 1200,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
+                "quoted": {
+                    "key": {
+                        "fromMe": True,
+                        "type":'Atualização no Protheus',
+                        "id": ""
+                    }
                 }
             }
-        }
+        else:
+            # data['ticket']['action'] == "Chamado solucionado"
+            payload = {
+                "number": f"{usuario[1]}",
+                "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['solution']['description'])}""",
+                "delay": 1200,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
+                "quoted": {
+                    "key": {
+                        "fromMe": True,
+                        "type":'Atualização no Protheus',
+                        "id": ""
+                    }
+                }
+            }
 
         start_chat(payload)
 
