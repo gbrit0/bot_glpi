@@ -132,7 +132,7 @@ def send_update_protheus(data):
             payload = {
                 "number": f"{usuario[1]}",
                 "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['content'])}""",
-                "delay": 3000,
+                "delay": 2000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -148,7 +148,7 @@ def send_update_protheus(data):
             payload = {
                 "number": f"{usuario[1]}",
                 "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['solution']['description'])}""",
-                "delay": 3000,
+                "delay": 2000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -234,7 +234,7 @@ def send_message(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp.\n\nPara acompanhar acesse o link: {data['ticket']['url']}""",
-                "delay": 3000,
+                "delay": 2000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -257,7 +257,7 @@ def send_message(data):
                 payload = {
                     "number": f"{data['author']['mobile']}",
                     "text":f"{text}",
-                    "delay": 3000,
+                    "delay": 2000,
                     "linkPreview": True,
                     "mentionsEveryOne": False,
                     "quoted": {
@@ -277,7 +277,7 @@ def send_message(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "text":f"{text}",
-                "delay": 3000,
+                "delay": 2000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -334,7 +334,7 @@ def send_message(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\n\t*status:* {data['ticket']['status']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}""",
-                "delay": 3000,
+                "delay": 2000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
