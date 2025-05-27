@@ -40,8 +40,8 @@ def send_ticket_solution_async(data):
 def tudo():
     data = request.get_json()
     print(data)
-    print(f"data['author']['id']: {data['author']['id']}")
-    print(f"type(data['authos']['id']): {type(data['author']['id'])}")
+    # print(f"data['author']['id']: {data['author']['id']}")
+    # print(f"type(data['author']['id']): {type(data['author']['id'])}")
 
     return jsonify("OK"), 200
 
@@ -78,7 +78,7 @@ def handle_user_list_response():
     # print("handle_user_list_response\n")
     try:
         data = request.get_json()
-        print(data)
+        # print(data)
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
         # print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
         
@@ -132,7 +132,7 @@ def send_update_protheus(data):
             payload = {
                 "number": f"{usuario[1]}",
                 "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['content'])}""",
-                "delay": 1200,
+                "delay": 3000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -148,7 +148,7 @@ def send_update_protheus(data):
             payload = {
                 "number": f"{usuario[1]}",
                 "text":f"""Olá, {usuario[0]}!\n\n{clean_html(data['ticket']['solution']['description'])}""",
-                "delay": 1200,
+                "delay": 3000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -234,7 +234,7 @@ def send_message(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "text":f"""*_NOVO CHAMADO_*\n\nOlá, {data['author']['name']}!\n\nRecebemos seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\tAs atualizações em seu chamado serão enviadas em seu Whatsapp.\n\nPara acompanhar acesse o link: {data['ticket']['url']}""",
-                "delay": 1200,
+                "delay": 3000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -249,20 +249,41 @@ def send_message(data):
             start_chat(payload)
 
         case 'Novo acompanhamento':
-            if data['documents'] != '':
-                text = f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {clean_html(data['ticket']['solution']['approval']['description'])}\n\nHá um documento associado a essa atualização, para acompanhar acesse o link: {data['ticket']['url']}"""
-            else:
-                text = f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {clean_html(data['ticket']['solution']['approval']['description'])}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+            if clean_html(data['ticket']['solution']['approval']['description']) != 'Solução aprovada':
+                if data['documents'] != '':
+                    text = f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {clean_html(data['ticket']['solution']['approval']['description'])}\n\nHá um documento associado a essa atualização, para acompanhar acesse o link: {data['ticket']['url']}"""
+                else:
+                    text = f"""*_NOVO ACOMPANHAMENTO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['action']} em seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}:\n\n\t*{data['ticket']['solution']['approval']['author']}:* {clean_html(data['ticket']['solution']['approval']['description'])}\n\nPara acompanhar acesse o link: {data['ticket']['url']}"""
+                payload = {
+                    "number": f"{data['author']['mobile']}",
+                    "text":f"{text}",
+                    "delay": 3000,
+                    "linkPreview": True,
+                    "mentionsEveryOne": False,
+                    "quoted": {
+                        "key": {
+                            "fromMe": True,
+                            "type":'Novo acompanhamento',
+                            "id": ""
+                        }
+                    }
+                }
+
+                start_chat(payload)
+        
+        case 'Pesquisa de satisfação':
+            print(f"Pesquisa de satisfação")
+            text = f"""*_PESQUISA DE SATISFAÇÃO_*\n\nOlá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} - {data['ticket']['title']}, foi fechado e a pesquisa de satisfação já pode ser respondida.\n\nPara responder acesse o link: {data['ticket']['satisfaction']['url']}"""
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "text":f"{text}",
-                "delay": 1200,
+                "delay": 3000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":'Novo acompanhamento',
+                        "type":'Pesquisa de satisfação',
                         "id": ""
                     }
                 }
@@ -271,45 +292,6 @@ def send_message(data):
             start_chat(payload)
             
         case "Chamado solucionado":
-
-            # payload = {
-            #     "number": f"{data['author']['mobile']}",
-            #     "ticke_id": f"{data['ticket']['id']}",
-            #     "listMessage": {
-            #         "title": "*_CHAMADO SOLUCIONADO_*",
-            #         "description": f"""Olá, {data['author']['name']}!\n\nSeu chamado nº {data['ticket']['id']} foi solucionado!\n\n\t*{data['ticket']['solution']['author']}:* {clean_html(data['ticket']['solution']['description'])}\n""",
-            #         "buttonText": "Clique aqui para aceitar ou negar a solução",
-            #         "footerText": f"Para acompanhar acesse o link:\n{data['ticket']['url']}",
-            #         "sections": [
-            #             {
-            #                 "title": "Aprovar solução:",
-            #                 "rows": [
-            #                     {
-            #                         "title": "Sim",
-            #                         "description": "A solução foi satisfatória.",
-            #                         "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
-            #                     },
-            #                     {
-            #                         "title": "Não",
-            #                         "description": "A solução não foi satisfatória.",
-            #                         "rowId": f"{data['ticket']['id']}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
-            #                     }
-            #                 ]
-            #             }
-            #         ]
-            #     },
-            #     "options": {
-            #         "delay": 1200,
-            #         "presence": "composing"
-            #     },
-            #     "quoted": {
-            #         "key": {
-            #             "fromMe": True,
-            #             "type":"Chamado solucionado",
-            #             "id":""
-            #         }
-            #     }
-            # }
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "title": "*_CHAMADO SOLUCIONADO_*",
@@ -352,7 +334,7 @@ def send_message(data):
             payload = {
                 "number": f"{data['author']['mobile']}",
                 "text":f"""*_ATUALIZAÇÃO DE UM CHAMADO_*\n\nOlá, {data['author']['name']}!\n\n{data['ticket']['lastupdater']} atualizou seu chamado nº {data['ticket']['id']} - {data['ticket']['title']}\n\n\t*status:* {data['ticket']['status']}\n\nPara acompanhar acesse o link: {data['ticket']['url']}""",
-                "delay": 1200,
+                "delay": 3000,
                 "linkPreview": True,
                 "mentionsEveryOne": False,
                 "quoted": {
@@ -382,7 +364,7 @@ def start_chat(payload):
     )
     
     data = response.json()
-    print(data)
+    # print(data)
     if response.status_code == 201:
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['text'])]
         with pool.get_connection() as con:
@@ -401,8 +383,8 @@ def start_chat(payload):
                     print(f"{datetime.now()}\terro: {e}")             
 
 def send_ticket_solution(payload):
-    print("Entrou em send_ticket_solution")
-    print(payload)
+    # print("Entrou em send_ticket_solution")
+    # print(payload)
     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/{os.getenv('EVOLUTION_INSTANCE')}"
 
     response = requests.request(
@@ -415,7 +397,7 @@ def send_ticket_solution(payload):
         }
     )
     data = response.json()
-    print(data)
+    # print(data)
     if response.status_code == 201:
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), json.dumps(payload['sections'], ensure_ascii=False)]
         with pool.get_connection() as con:
