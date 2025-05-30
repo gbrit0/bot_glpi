@@ -290,6 +290,7 @@ def send_message(data):
             }
 
             start_chat(payload)
+            registerTicketSatisfaction(data['ticket']['id'])
             
         case "Chamado solucionado":
             payload = {
@@ -327,7 +328,6 @@ def send_message(data):
             thread.start()
             # send_ticket_solution(payload)
             return jsonify("Request received"), 200
-
 
         case _:
             
@@ -412,6 +412,20 @@ def send_ticket_solution(payload):
                     print(f"{datetime.now()}\terro de conexao MySQL: {e}\n")
                 except Exception as e:
                     print(f"{datetime.now()}\terro: {e}\n")
+
+def registerTicketSatisfaction(ticketId):
+    with pool.get_connection() as con:
+        with con.cursor() as cursor:
+            sql=f"""INSERT INTO `u629942907_glpi`.`glpi_itilfollowups` (`date`, itemtype, items_id, users_id, content) 
+            VALUES (now(), 'Ticket', %s, 265, 'Pesquisa de satisfação enviada!');"""
+            try:
+                cursor.execute(sql, ticketId)
+                con.commit()
+                
+            except mysql.connector.Error as e:
+                print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+            except Exception as e:
+                print(f"{datetime.now()}\terro: {e}")
 
 if __name__ == '__main__':
     
