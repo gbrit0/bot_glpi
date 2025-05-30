@@ -288,9 +288,12 @@ def send_message(data):
                     }
                 }
             }
-
-            start_chat(payload)
-            registerTicketSatisfaction(data['ticket']['id'])
+            try:
+                start_chat(payload)
+            except Exception as e:
+                print(f"{datetime.now()}\terro ao enviar mensagem de pesquisa de satisfação: {e}")
+            else:
+                registerTicketSatisfaction(data['ticket']['id'])
             
         case "Chamado solucionado":
             payload = {
