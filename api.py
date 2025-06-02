@@ -217,8 +217,15 @@ def send_users_ticket_validation(data):
 
     url = f"{os.getenv('GLPI_API_BASE_URL')}/Ticket/{ticket_id}"
     
-    response = requests.request("PUT", url, headers=headers, json=payload)
-    # print(f'response da api glpipara o send_user_ticket_validation: {response.json()}\n')
+    # response = requests.request("PUT", url, headers=headers, json=payload)
+    try:
+        response = requests.request("PUT", url, headers=headers, json=payload, timeout=10)
+        response.raise_for_status()  # levanta erro para códigos 4xx/5xx
+    except requests.Timeout:
+        print("Erro: timeout ao tentar acessar a API.")
+    except requests.RequestException as e:
+        print(f"Erro de requisição: {e}")
+    
 
     kill_glpi_api_session(session_token)
 
