@@ -293,7 +293,7 @@ def send_message(data):
             except Exception as e:
                 print(f"{datetime.now()}\terro ao enviar mensagem de pesquisa de satisfação: {e}")
             else:
-                registerTicketSatisfaction(data['ticket']['id'])
+                register_ticket_satisfaction(data['ticket']['id'])
             
         case "Chamado solucionado":
             payload = {
@@ -416,13 +416,16 @@ def send_ticket_solution(payload):
                 except Exception as e:
                     print(f"{datetime.now()}\terro: {e}\n")
 
-def registerTicketSatisfaction(ticketId):
+def register_ticket_satisfaction(ticketId):
+    print(f"entrou em register_ticket_satisfaction com ticketId: {ticketId}")
     with pool.get_connection() as con:
         with con.cursor() as cursor:
-            sql=f"""INSERT INTO `u629942907_glpi`.`glpi_itilfollowups` (`date`, itemtype, items_id, users_id, content) 
-            VALUES (now(), 'Ticket', %s, 265, 'Pesquisa de satisfação enviada!');"""
+            sql="""
+            INSERT INTO `u629942907_glpi`.`glpi_itilsolutions` (itemtype, items_id, solutiontypes_id, content,`date_creation`, users_id) 
+            VALUES ('Ticket', %s, 0, 'Pesquisa de satisfação enviada!', now(), 265);
+            """
             try:
-                cursor.execute(sql, ticketId)
+                cursor.execute(sql, (ticketId,))
                 con.commit()
                 
             except mysql.connector.Error as e:
