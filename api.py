@@ -121,7 +121,7 @@ def handle_user_list_response():
     return jsonify("received_data"), 200
 
 def send_update_protheus(data):
-    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '39';"
+    sql = f"SELECT CONCAT(u.firstname, ' ', u.realname) AS nome, u.mobile FROM glpi_groups_users AS gu LEFT JOIN glpi_users AS u ON u.id = gu.users_id WHERE gu.groups_id = '{os.getenv('GLPI_USER_GROUP_ID')}';"
     with pool.get_connection() as con:
         with con.cursor() as cursor:
             cursor.execute(sql)
