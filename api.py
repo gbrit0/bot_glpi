@@ -49,12 +49,12 @@ def tudo():
 def handle_glpi_webhook():
     # print('entrou em /webhook')
     data = request.get_json()
-    print(data)
     # print(f'request: {request}')
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
+    print(f"{data}\n")
     try:
         if data['ticket'].get('observergroups') == "notificacao_protheus" and (data['ticket']['action'] == "Novo chamado" or data['ticket']['action'] == "Chamado solucionado") and data['author']['id'] in ['2', '183', '233', '329', '137']:
             print("entrou no if de notificação_protheus")
