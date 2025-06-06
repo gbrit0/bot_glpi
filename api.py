@@ -54,7 +54,7 @@ def handle_glpi_webhook():
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
-    print(f"{data}\n")
+    print(f"{data}")
     try:
         if data['ticket'].get('observergroups') == "notificacao_protheus" and (data['ticket']['action'] == "Novo chamado" or data['ticket']['action'] == "Chamado solucionado") and data['author']['id'] in ['2', '183', '233', '329', '137']:
             print("entrou no if de notificação_protheus")
@@ -78,9 +78,9 @@ def handle_user_list_response():
     # print("handle_user_list_response\n")
     try:
         data = request.get_json()
-        # print(data)
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-        # print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        print(data)
         
         if data is None:
             return jsonify({"error": "Invalid JSON or no JSON received"}), 400
@@ -186,7 +186,7 @@ def kill_glpi_api_session(session_token):
    response = requests.request("GET", url, headers=headers)
 
 def send_users_ticket_validation(data):
-    # print("entrou em send_users_ticket_validation\n")
+    print("entrou em send_users_ticket_validation\n")
     session_token = init_glpi_api_session()
     # print(f"Sessão GLPI iniciada. session_token: {session_token}\n")
     ticket_id = data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']
@@ -235,6 +235,7 @@ def clean_html(texto):
     return clean.get_text()
 
 def send_message(data):
+    print("Entrou em send_message")
     match data['ticket']['action']:
         
         case 'Novo chamado':
@@ -359,14 +360,16 @@ def send_message(data):
             start_chat(payload)
     # print(response.text)
 
+import json
+
 def start_chat(payload):
-    # print("Entrou em start_chat")
+    print("Entrou em start_chat")
     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendText/{os.getenv('EVOLUTION_INSTANCE')}"
 
     response = requests.request(
         "POST", 
         url, 
-        json=payload, 
+        json=json.dumps(payload), 
         headers={
             "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
             "Content-Type": "application/json"
@@ -374,14 +377,15 @@ def start_chat(payload):
     )
     
     data = response.json()
-    # print(data)
+    print(f"response post evolution: {data}\n")
+
     if response.status_code == 201:
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['text'])]
         with pool.get_connection() as con:
             # print("conectado na pool")
             with con.cursor() as cursor:
                 # print("conectado no cursor")
-                sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`) 
+                sql=f"""INSERT INTO `u629942907_glpi`.`mensagens` (`id_mensagem`, `destinatario`, `data_hora`, `tipo`, `conteudo`)
                 VALUES (%s, %s, %s, %s, %s);"""
                 try:
                     cursor.execute(sql, values)
@@ -390,10 +394,10 @@ def start_chat(payload):
                 except mysql.connector.Error as e:
                     print(f"{datetime.now()}\terro de conexao MySQL: {e}")
                 except Exception as e:
-                    print(f"{datetime.now()}\terro: {e}")             
+                    print(f"{datetime.now()}\terro: {e}")
 
 def send_ticket_solution(payload):
-    # print("Entrou em send_ticket_solution")
+    print("Entrou em send_ticket_solution")
     # print(payload)
     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/{os.getenv('EVOLUTION_INSTANCE')}"
 
