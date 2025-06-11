@@ -369,7 +369,7 @@ def start_chat(payload):
     response = requests.request(
         "POST", 
         url, 
-        json=json.dumps(payload), 
+        json=payload, 
         headers={
             "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
             "Content-Type": "application/json"
