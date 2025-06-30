@@ -1,5 +1,5 @@
 #! /bin/zsh
-cd /home/bot/glpi
+cd /home/gabriel/bot_glpi
 while :
 do
    cd /home/gabriel/bot_glpi

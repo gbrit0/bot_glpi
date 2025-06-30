@@ -75,12 +75,12 @@ def handle_glpi_webhook():
 
 @app.route('/answers', methods=['POST'])
 def handle_user_list_response():
-    # print("handle_user_list_response\n")
+    print("handle_user_list_response\n")
     try:
         data = request.get_json()
+        print(f'{data}\n')
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-        print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
-        print(data)
+        # print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
         
         if data is None:
             return jsonify({"error": "Invalid JSON or no JSON received"}), 400
@@ -114,8 +114,7 @@ def handle_user_list_response():
                     # finally:
                     #     exit()
     except Exception as e:
-        print(e)
-    
+        raise Exception(f"Erro ao processar /answers: {e}")    
         
     
     return jsonify("received_data"), 200
