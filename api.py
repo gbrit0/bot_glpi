@@ -234,7 +234,7 @@ def clean_html(texto):
     return clean.get_text()
 
 def send_message(data):
-    print("Entrou em send_message")
+    # print("Entrou em send_message")
     match data['ticket']['action']:
         
         case 'Novo chamado':
@@ -376,7 +376,7 @@ def start_chat(payload):
     )
     
     data = response.json()
-    print(f"response post evolution: {data}\n")
+    # print(f"response post evolution: {data}\n")
 
     if response.status_code == 201:
         values = [str(data['key']['id']), str(payload['number']), str(datetime.now()), str(payload['quoted']['key']['type']), str(payload['text'])]
@@ -396,7 +396,7 @@ def start_chat(payload):
                     print(f"{datetime.now()}\terro: {e}")
 
 def send_ticket_solution(payload):
-    print("Entrou em send_ticket_solution")
+    # print("Entrou em send_ticket_solution")
     # print(payload)
     url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendList/{os.getenv('EVOLUTION_INSTANCE')}"
 
