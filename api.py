@@ -49,12 +49,11 @@ def tudo():
 def handle_glpi_webhook():
     # print('entrou em /webhook')
     data = request.get_json()
-    # print(f'request: {request}')
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data['ticket']['action']}\tticket_id: {data['ticket']['id']}")
-    print(f"{data}")
+    print(f"{data}\n")
     try:
         if data['ticket'].get('observergroups') == "notificacao_protheus" and (data['ticket']['action'] == "Novo chamado" or data['ticket']['action'] == "Chamado solucionado") and data['author']['id'] in ['2', '183', '233', '329', '137']:
             print("entrou no if de notificação_protheus")
@@ -80,12 +79,15 @@ def handle_user_list_response():
         data = request.get_json()
         print(f'{data}\n')
         # action = data['data']['message']['listResponseMessage']['contextInfo']['quotedMessage']['listMessage']['title'].replace("*", "").replace("_","").lower()
-        # print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        print(f"{datetime.now()}\t/answers\taction: {data['ticket']['action']}\tticket_id: {data['data']['message']['listResponseMessage']['singleSelectReply']['selectedRowId']}")
+        # print(data)
         
         if data is None:
+            print("Data is None")
             return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
         if data['data']['messageType'] != 'listResponseMessage':
+            print("Message Type <> listResponseMessage")
             return jsonify("received_data"), 200
 
         id_mensagem = data['data']['message']['listResponseMessage']['contextInfo']['stanzaId']
@@ -114,7 +116,8 @@ def handle_user_list_response():
                     # finally:
                     #     exit()
     except Exception as e:
-        raise Exception(f"Erro ao processar /answers: {e}")    
+        raise_for_status(e)
+    
         
     
     return jsonify("received_data"), 200
@@ -454,17 +457,4 @@ if __name__ == '__main__':
 
     glpiApiBaseUrl = os.getenv('GLPI_API_BASE_URL')
 
-    # pool = mysql.connector.pooling.MySQLConnectionPool(
-    #     pool_name="botGLPI",
-    #     pool_size=5,
-    #     user=os.getenv('GLPI_MYSQL_USER'),
-    #     password=os.getenv('GLPI_MYSQL_PASSWORD'),
-    #     host=os.getenv('GLPI_MYSQL_HOST'),
-    #     database=os.getenv('GLPI_MYSQL_DATABASE'),
-    #     collation='utf8mb4_general_ci' # especificando o collation para evitar erro de codificação
-    # )
-    
-    # with pool.get_connection() as con:
-    #     with con.cursor() as cursor:
-    #         print('conectado com sucesso na base de daos nova do glpi')
     app.run(host='0.0.0.0', port=52001, debug=True)
