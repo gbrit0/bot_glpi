@@ -5,6 +5,7 @@
       "mobile": "##FOREACH FIRST 1 authors####author.mobile####ENDFOREACHauthors##"
    },
    "ticket": {
+      "assigntousers": "##ticket.assigntousers##",
       "observergroups": "##ticket.observergroups##",
       "action": "##ticket.action##",
       "category": "##ticket.category##",
@@ -33,7 +34,7 @@
       "status": "##ticket.status##",
       "title": "##ticket.title##",
       "content": "##ticket.content##",
-      "url": "https://glpi.brggeradores.com.br/index.php?redirect=ticket_##ticket.id##" 
+      "url": "https://glpi.brggeradores.com.br/index.php?redirect=ticket_##ticket.id##"
    },
    "validations": {
       "answer": {
@@ -47,6 +48,5 @@
       "submissiondate": "##FOREACH LAST 1 validations####validation.submissiondate####ENDFOREACHvalidations##",
       "validationdate": "##FOREACH LAST 1 validations####validation.validationdate####ENDFOREACHvalidations##",
       "validator": "##FOREACH LAST 1 validations####validation.validator####ENDFOREACHvalidations##"
-   },
-   "documents": "##FOREACH LAST 1 documents####ticket.numberofdocuments####ENDFOREACHdocuments##"
+   }
 }
