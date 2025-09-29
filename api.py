@@ -8,6 +8,21 @@ from datetime import datetime
 import json
 from threading import Thread
 import queue
+import logging
+
+logging.baseConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler("api.log"), logging.StreamHandler()]
+)
+
+logger = logging.getLogger(__name__)
+
+handler = logging.handlers.RotatingFileHandler(
+    "api.log",
+    maxBytes=1024*1024,
+    backupCount=5
+)
 
 load_dotenv(override=True) 
 
@@ -29,12 +44,14 @@ def send_update_protheus_async(data):
         send_update_protheus(data)
     except Exception as e:
         print(f"Erro ao processar send_update_protheus: {e}")
+        logger.error(f"{datetime.now()} - send_update_protheus_async - Erro: {e}", exc_info=True)
 
 def send_ticket_solution_async(data):
     try:
         send_ticket_solution(data)
     except Exception as e:
         print(f"Erro ao processar send_ticket_solution: {e}")
+        logger.error(f"{datetime.now()} - send_ticket_solution - Erro: {e}", exc_info=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def tudo():
@@ -78,6 +95,7 @@ def handle_glpi_webhook():
 
 
     except KeyError as e:
+        logger.error(f"{datetime.now()} - handle_glpi_webhook - Erro: {e}", exc_info=True)
         return jsonify({"error": f"Missing key: {e}"}), 400
     
 
@@ -127,6 +145,7 @@ def handle_user_list_response():
                     # finally:
                     #     exit()
     except Exception as e:
+        logger.error(f"{datetime.now()} - handle_user_list_response - Erro: {e}", exc_info=True)
         raise e
     
         
@@ -236,8 +255,10 @@ def send_users_ticket_validation(data):
         response.raise_for_status()  # levanta erro para códigos 4xx/5xx
     except requests.Timeout:
         print("Erro: timeout ao tentar acessar a API.")
+        logger.error(f"{datetime.now()} - send_users_ticket_validation - Erro: timeout ao tentar acessar a API.", exc_info=True)
     except requests.RequestException as e:
         print(f"Erro de requisição: {e}")
+        logger.error(f"{datetime.now()} - send_users_ticket_validation - Erro: {e}", exc_info=True)
     
 
     kill_glpi_api_session(session_token)
@@ -333,6 +354,7 @@ def send_message(data):
                 register_ticket_satisfaction(data.get('ticket').get('id'))
             except Exception as e:
                 print(f"{datetime.now()}\terro ao enviar mensagem de pesquisa de satisfação: {e}")
+                logger.error(f"{datetime.now()} - send_message - Erro: {e}", exc_info=True)
             
         case "Chamado solucionado":
             text = f"""*_CHAMADO SOLUCIONADO_*\n\nOlá, {data.get('author').get('name')}!\n\nSeu chamado nº {data.get('ticket').get('id')} - {data.get('ticket').get('title')}, foi foi solucionado!\n\n\t*{data.get('ticket').get('solution').get('author')}:* {clean_html(data.get('ticket').get('solution').get('description'))}\n\nPara aceitar ou negar a solução acesse o link:\n{data.get('ticket').get('url')}"""
@@ -385,6 +407,7 @@ def chat_worker():
             start_chat(payload)
         except Exception as e:
             print(f"Erro no chat_worker: {e}")
+            logger.error(f"{datetime.now()} - chat_worker - Erro: {e}", exc_info=True)
         finally:
             chat_queue.task_done()
 
@@ -425,6 +448,7 @@ def start_chat(payload):
                     
                 except mysql.connector.Error as e:
                     print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                    logger.error(f"{datetime.now()} - start_chat - Erro: {e}", exc_info=True)
                 except Exception as e:
                     print(f"{datetime.now()}\terro: {e}")
 
@@ -456,6 +480,7 @@ def send_ticket_solution(payload):
                     
                 except mysql.connector.Error as e:
                     print(f"{datetime.now()}\terro de conexao MySQL: {e}\n")
+                    logger.error(f"{datetime.now()} - send_ticket_solution - Erro: {e}", exc_info=True)
                 except Exception as e:
                     print(f"{datetime.now()}\terro: {e}\n")
 
@@ -473,8 +498,10 @@ def register_ticket_satisfaction(ticketId):
                 
             except mysql.connector.Error as e:
                 print(f"{datetime.now()}\terro de conexao MySQL: {e}")
+                logger.error(f"{datetime.now()} - register_ticket_satisfaction - Erro de conexao MySQL: {e}", exc_info=True)
             except Exception as e:
                 print(f"{datetime.now()}\terro: {e}")
+                logger.error(f"{datetime.now()} - register_ticket_satisfaction - Erro: {e}", exc_info=True)
 
 def busca_dados_tecnico(ticketId):
     query = f"""
