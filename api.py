@@ -12,7 +12,7 @@ load_dotenv(override=True)
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="botGLPI",
-    pool_size=5,
+    pool_size=10,
     user=os.getenv('GLPI_MYSQL_USER'),
     password=os.getenv('GLPI_MYSQL_PASSWORD'),
     host=os.getenv('GLPI_MYSQL_HOST'),
@@ -124,7 +124,7 @@ def handle_user_list_response():
                     # finally:
                     #     exit()
     except Exception as e:
-        raise_for_status(e)
+        raise e
     
         
     
