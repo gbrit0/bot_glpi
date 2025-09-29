@@ -7,6 +7,7 @@ import mysql.connector
 from datetime import datetime
 import json
 from threading import Thread
+import queue
 
 load_dotenv(override=True) 
 
@@ -52,6 +53,7 @@ def handle_glpi_webhook():
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data.get('ticket').get('action')}\tticket_id: {data.get('ticket').get('id')}")
+    print(f"\ndata: {data}\n")
     try:
         if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:       
             # Inicia a thread e responde imediatamente
@@ -171,7 +173,7 @@ def send_update_protheus(data):
                 }
             }
 
-        start_chat(payload)
+        enqueue_chat(payload)
 
 def init_glpi_api_session():
    glpiApiHeaders = {
@@ -260,7 +262,7 @@ def mensagem_do_autor(nome_tecnico, telefone_tecnico, data):
                     }
                 }
             }
-    start_chat(payload)
+    enqueue_chat(payload)
 
 def send_message(data):
     # print("Entrou em send_message")
@@ -282,7 +284,7 @@ def send_message(data):
                 }
             }
 
-            start_chat(payload)
+            enqueue_chat(payload)
 
         case 'Novo acompanhamento':
             if clean_html(data.get('ticket').get('solution').get('approval').get('description')) != 'Solução aprovada':
@@ -305,7 +307,7 @@ def send_message(data):
                     }
                 }
 
-                start_chat(payload)
+                enqueue_chat(payload)
         
         case 'Pesquisa de satisfação':
             print(f"Pesquisa de satisfação")
@@ -325,48 +327,33 @@ def send_message(data):
                     }
                 }
             }
+
             try:
-                start_chat(payload)
+                enqueue_chat(payload)
+                register_ticket_satisfaction(data.get('ticket').get('id'))
             except Exception as e:
                 print(f"{datetime.now()}\terro ao enviar mensagem de pesquisa de satisfação: {e}")
-            else:
-                register_ticket_satisfaction(data.get('ticket').get('id'))
             
         case "Chamado solucionado":
+            text = f"""*_CHAMADO SOLUCIONADO_*\n\nOlá, {data.get('author').get('name')}!\n\nSeu chamado nº {data.get('ticket').get('id')} - {data.get('ticket').get('title')}, foi foi solucionado!\n\n\t*{data.get('ticket').get('solution').get('author')}:* {clean_html(data.get('ticket').get('solution').get('description'))}\n\nPara aceitar ou negar a solução acesse o link:\n{data.get('ticket').get('url')}"""
             payload = {
                 "number": f"{data.get('author').get('mobile')}",
-                "title": "*_CHAMADO SOLUCIONADO_*",
-                "description": f"""Olá, {data.get('author').get('name')}!\n\nSeu chamado nº {data.get('ticket').get('id')} foi solucionado!\n\n\t*{data.get('ticket').get('solution').get('author')}:* {clean_html(data.get('ticket').get('solution').get('description'))}\n""",
-                "buttonText": "Clique aqui para aceitar ou negar a solução",
-                "footerText": f"Para acompanhar acesse o link:\n{data.get('ticket').get('url')}",
-                "sections": [
-                    {
-                        "title": "Aprovar solução:",
-                        "rows": [
-                            {
-                                "title": "Sim",
-                                "description": "A solução foi satisfatória.",
-                                "rowId": f"{data.get('ticket').get('id')}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
-                            },
-                            {
-                                "title": "Não",
-                                "description": "A solução não foi satisfatória.",
-                                "rowId": f"{data.get('ticket').get('id')}" # passando o ticketId para recuperar mais fácil na hora de enviar a aprovação
-                            }
-                        ]
-                    }
-                ],
+                "text":f"{text}",
+                "delay": 2000,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
                 "quoted": {
                     "key": {
                         "fromMe": True,
-                        "type":"Chamado solucionado",
+                        "type":'Chamado solucionado',
                         "id": ""
                     }
                 }
             }
-            thread = Thread(target=send_ticket_solution_async, args=(payload,))
-            thread.start()
+            # thread = Thread(target=send_ticket_solution_async, args=(payload,))
+            # thread.start()
             # send_ticket_solution(payload)
+            enqueue_chat(payload)
             return jsonify("Request received"), 200
 
         case _:
@@ -386,8 +373,24 @@ def send_message(data):
                 }
             }
     
-            start_chat(payload)
+            enqueue_chat(payload)
     # print(response.text)
+
+def chat_worker():
+    print("chat_worker iniciado!")
+    while True:
+        payload = chat_queue.get()
+        print(f"Processando payload na fila: {payload}")
+        try:
+            start_chat(payload)
+        except Exception as e:
+            print(f"Erro no chat_worker: {e}")
+        finally:
+            chat_queue.task_done()
+
+def enqueue_chat(payload):
+    print(f"Enfileirando payload: {payload}")
+    chat_queue.put(payload)
 
 import json
 
@@ -494,15 +497,12 @@ def busca_dados_tecnico(ticketId):
             if result:
                 return result
 
+
+chat_queue = queue.Queue()
+
+worker_thread = Thread(target=chat_worker, daemon=True)
+worker_thread.start()
+
 if __name__ == '__main__':
     
-    evolutionApiHeaders = {
-        "apikey": f"{os.getenv('EVOLUTION_API_KEY')}",
-        "Content-Type": "application/json"
-    }
-
-    evolutionApiBaseUrl = os.getenv('EVOLUTION_API_BASE_URL')
-
-    glpiApiBaseUrl = os.getenv('GLPI_API_BASE_URL')
-
     app.run(host='0.0.0.0', port=52001, debug=True)
