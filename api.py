@@ -46,26 +46,27 @@ def tudo():
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
-    # print('entrou em /webhook')
+    print('entrou em /webhook')
     data = request.get_json()
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data.get('ticket').get('action')}\tticket_id: {data.get('ticket').get('id')}")
     try:
-        if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:
-            print("entrou no if de notificação_protheus")
+        if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:       
             # Inicia a thread e responde imediatamente
             thread = Thread(target=send_update_protheus_async, args=(data,))
             thread.start()
 
             return jsonify("Request received"), 200
 
-        elif data.get('ticket').get('lastupdater') != data.get('author').get('name') or data.get('ticket').get('action') == "Novo chamado":
+        elif data.get('ticket').get('lastupdater') != data.get('author').get('name') or data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == 'Pesquisa de satisfação':
+        
             # if data.get('author').get('mobile') == '556281321017' or data.get('author').get('mobile') == '556286342844':
             send_message(data)
         elif data.get('ticket').get('lastupdater') == data.get('author').get('name'): # Mensagem do autor Enviar para o técnico
             # print(f"------ {data.get('author').get('name')} ------\n")
+        
             print(f"{data}\n")
             id_chamado = data.get('ticket').get('id')
             nome_tecnico, telefone_tecnico = busca_dados_tecnico(id_chamado)
@@ -308,6 +309,7 @@ def send_message(data):
         
         case 'Pesquisa de satisfação':
             print(f"Pesquisa de satisfação")
+            print(f"data: {data}")
             text = f"""*_PESQUISA DE SATISFAÇÃO_*\n\nOlá, {data.get('author').get('name')}!\n\nSeu chamado nº {data.get('ticket').get('id')} - {data.get('ticket').get('title')}, foi fechado e a pesquisa de satisfação já pode ser respondida.\n\nPara responder acesse o link: {data.get('ticket').get('satisfaction').get('url')}"""
             payload = {
                 "number": f"{data.get('author').get('mobile')}",
