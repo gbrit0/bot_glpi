@@ -10,20 +10,33 @@ from threading import Thread
 import mysql.connector
 import queue
 import logging
+from logging.handlers import RotatingFileHandler
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler("api.log"), logging.StreamHandler()]
-)
-
+# 1. Obtenha o logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG) # Defina o nível de log no logger principal
 
-handler = logging.handlers.RotatingFileHandler(
-    "api.log",
-    maxBytes=1024*1024,
+# 2. Crie um formatador para padronizar a aparência dos logs
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+# 3. Crie o handler para salvar em arquivo com rotação (RotatingFileHandler)
+file_handler = RotatingFileHandler(
+    "api.log", 
+    maxBytes=1024*1024, # 1 MB
     backupCount=5
 )
+file_handler.setFormatter(formatter) # Aplique o formatador ao handler
+
+# 4. Crie o handler para exibir no console (StreamHandler)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter) # Aplique o mesmo formatador
+
+# 5. Adicione os handlers ao logger
+# Evita adicionar handlers duplicados se o script for importado várias vezes
+if not logger.handlers:
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
+
 import mysql.connector
 
 load_dotenv(override=True) 
@@ -68,7 +81,6 @@ def send_ticket_solution_async(data):
         logger.error(f"{datetime.now()} - send_ticket_solution - Erro: {e}", exc_info=True)
 
 from bs4 import BeautifulSoup
-import pprint
 
 def extrair_dados_de_tabela_html(html_content: str) -> dict:
     """
@@ -113,16 +125,17 @@ def extrair_dados_de_tabela_html(html_content: str) -> dict:
                 
     return dados_extraidos
 
-def cadastro_fornecedor(data):
-    dados = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", "Conteúdo"))
+def cadastro_fornecedor(id):
+    """Registra no banco de dados de automações um novo chamado de cadastro de fornecedor."""
+    # dados = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", "Conteúdo"))
         
-    dados["Chamado"] = data.get("ticket", []).get("id", [])
+    # dados["Chamado"] = data.get("ticket", []).get("id", [])
 
     try:
         query = f"INSERT INTO `automacoes`.`chamados_cadastro_fornecedor` (chamado, analisado) " \
                 f"VALUES (%s, 0);"
         
-        values = [data.get("ticket", []).get("id")]
+        values = [id]
 
         cnx = mysql.connector.connect(
             database=AUTOMACOES_DB, 
@@ -138,91 +151,14 @@ def cadastro_fornecedor(data):
     except Exception as e:
         cnx.rollback()
         print(e)
+        logger.error(e)
     finally:
         cnx.close()
 
-from bs4 import BeautifulSoup
-import pprint
-
-def extrair_dados_de_tabela_html(html_content: str) -> dict:
-    """
-    Analisa um conteúdo HTML para extrair dados de uma tabela específica.
-
-    A função espera uma tabela onde cada linha contém duas células principais:
-    - A primeira célula (com colspan="2") contém a pergunta/chave.
-    - A segunda célula contém a resposta/valor.
-
-    Args:
-        html_content: Uma string contendo o código HTML da tabela.
-
-    Returns:
-        Um dicionário com os dados extraídos (chave: valor).
-    """
-    # Cria um objeto BeautifulSoup para analisar o HTML
-    soup = BeautifulSoup(html_content, 'html.parser')
-    
-    # Dicionário para armazenar os dados
-    dados_extraidos = {}
-
-    # Encontra todas as linhas <tr> dentro do corpo da tabela <tbody>
-    linhas = soup.find('tbody').find_all('tr')
-
-    # Itera sobre cada linha
-    for linha in linhas:
-        # Encontra todas as células <td> na linha
-        celulas = linha.find_all('td')
-        
-        # Verifica se a linha tem o formato esperado (2 células)
-        if len(celulas) == 2:
-            # A primeira célula é a chave (pergunta)
-            # .get_text(strip=True) extrai o texto e remove espaços em branco
-            chave = celulas[0].get_text(strip=True)
-            
-            # A segunda célula é o valor (resposta)
-            valor = celulas[1].get_text(strip=True)
-            
-            # Adiciona ao dicionário apenas se a chave não estiver vazia
-            if chave:
-                dados_extraidos[chave] = valor
-                
-    return dados_extraidos
-
-def cadastro_fornecedor(data):
-    dados = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", "Conteúdo"))
-        
-    dados["Chamado"] = data.get("ticket", []).get("id", [])
-
-    try:
-        query = f"INSERT INTO `automacoes`.`chamados_cadastro_fornecedor` (chamado, analisado) " \
-                f"VALUES (%s, 0);"
-        
-        values = [data.get("ticket", []).get("id")]
-
-        cnx = mysql.connector.connect(
-            database=AUTOMACOES_DB, 
-            host=AUTOMACOES_HOST, 
-            port=AUTOMACOES_PORT, 
-            user=AUTOMACOES_USER, 
-            password=AUTOMACOES_PASS
-        )
-    
-        with cnx.cursor() as cursor:
-            cursor.execute(query, values)
-            cnx.commit()
-    except Exception as e:
-        cnx.rollback()
-        print(e)
-    finally:
-        cnx.close()
 
 @app.route('/', methods=['GET', 'POST'])
 def tudo():
     data = request.get_json()
-    # print(data)
-
-    if data is None:
-        return jsonify({"error": "Invalid JSON or no JSON received"}), 400
-        
     # print(data)
 
     if data is None:
@@ -239,7 +175,8 @@ def handle_glpi_webhook():
 
     print(f"{datetime.now()}\t/webhook\taction: {data.get('ticket').get('action')}\tticket_id: {data.get('ticket').get('id')}")
     if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") :
-        cadastro_fornecedor(data)
+        id = data.get("ticket", []).get("id")
+        cadastro_fornecedor(id)
 
 
     try:
