@@ -23,8 +23,20 @@ handler = logging.handlers.RotatingFileHandler(
     maxBytes=1024*1024,
     backupCount=5
 )
+import mysql.connector
 
 load_dotenv(override=True) 
+
+AUTOMACOES_DB=os.environ.get("AUTOMACOES_DB")
+AUTOMACOES_HOST=os.environ.get("AUTOMACOES_HOST")
+AUTOMACOES_PORT=os.environ.get("AUTOMACOES_PORT")
+AUTOMACOES_USER=os.environ.get("AUTOMACOES_USER")
+AUTOMACOES_PASS=os.environ.get("AUTOMACOES_PASS")
+
+if not AUTOMACOES_DB or not AUTOMACOES_HOST \
+    or not AUTOMACOES_PORT or not AUTOMACOES_USER \
+    or not AUTOMACOES_PASS:
+    raise EnvironmentError("Variáveis de ambiente relativas ao banco de dados de automações ausentes no .env")
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="botGLPI",
@@ -53,13 +65,88 @@ def send_ticket_solution_async(data):
         print(f"Erro ao processar send_ticket_solution: {e}")
         logger.error(f"{datetime.now()} - send_ticket_solution - Erro: {e}", exc_info=True)
 
+from bs4 import BeautifulSoup
+import pprint
+
+def extrair_dados_de_tabela_html(html_content: str) -> dict:
+    """
+    Analisa um conteúdo HTML para extrair dados de uma tabela específica.
+
+    A função espera uma tabela onde cada linha contém duas células principais:
+    - A primeira célula (com colspan="2") contém a pergunta/chave.
+    - A segunda célula contém a resposta/valor.
+
+    Args:
+        html_content: Uma string contendo o código HTML da tabela.
+
+    Returns:
+        Um dicionário com os dados extraídos (chave: valor).
+    """
+    # Cria um objeto BeautifulSoup para analisar o HTML
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # Dicionário para armazenar os dados
+    dados_extraidos = {}
+
+    # Encontra todas as linhas <tr> dentro do corpo da tabela <tbody>
+    linhas = soup.find('tbody').find_all('tr')
+
+    # Itera sobre cada linha
+    for linha in linhas:
+        # Encontra todas as células <td> na linha
+        celulas = linha.find_all('td')
+        
+        # Verifica se a linha tem o formato esperado (2 células)
+        if len(celulas) == 2:
+            # A primeira célula é a chave (pergunta)
+            # .get_text(strip=True) extrai o texto e remove espaços em branco
+            chave = celulas[0].get_text(strip=True)
+            
+            # A segunda célula é o valor (resposta)
+            valor = celulas[1].get_text(strip=True)
+            
+            # Adiciona ao dicionário apenas se a chave não estiver vazia
+            if chave:
+                dados_extraidos[chave] = valor
+                
+    return dados_extraidos
+
+def cadastro_fornecedor(data):
+    dados = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", "Conteúdo"))
+        
+    dados["Chamado"] = data.get("ticket", []).get("id", [])
+
+    try:
+        query = f"INSERT INTO `automacoes`.`chamados_cadastro_fornecedor` (chamado, analisado) " \
+                f"VALUES (%s, 0);"
+        
+        values = [data.get("ticket", []).get("id")]
+
+        cnx = mysql.connector.connect(
+            database=AUTOMACOES_DB, 
+            host=AUTOMACOES_HOST, 
+            port=AUTOMACOES_PORT, 
+            user=AUTOMACOES_USER, 
+            password=AUTOMACOES_PASS
+        )
+    
+        with cnx.cursor() as cursor:
+            cursor.execute(query, values)
+            cnx.commit()
+    except Exception as e:
+        cnx.rollback()
+        print(e)
+    finally:
+        cnx.close()
+
 @app.route('/', methods=['GET', 'POST'])
 def tudo():
     data = request.get_json()
-    print(data)
-    # print(f"data.get('author').get('id'): {data.get('author').get('id')}")
-    # print(f"type(data.get('author').get('id')): {type(data.get('author').get('id'))}")
+    # print(data)
 
+    if data is None:
+        return jsonify({"error": "Invalid JSON or no JSON received"}), 400
+        
     return jsonify("OK"), 200
 
 @app.route('/webhook', methods=['POST'])
@@ -71,6 +158,9 @@ def handle_glpi_webhook():
 
     print(f"{datetime.now()}\t/webhook\taction: {data.get('ticket').get('action')}\tticket_id: {data.get('ticket').get('id')}")
     print(f"\ndata: {data}\n")
+    if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") :
+        cadastro_fornecedor(data)
+
     try:
         if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:       
             # Inicia a thread e responde imediatamente
