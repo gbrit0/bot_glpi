@@ -11,7 +11,7 @@ import mysql.connector
 import queue
 import logging
 
-logging.baseConfig(
+logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.FileHandler("api.log"), logging.StreamHandler()]
@@ -39,16 +39,6 @@ if not AUTOMACOES_DB or not AUTOMACOES_HOST \
     or not AUTOMACOES_PASS:
     raise EnvironmentError("Variáveis de ambiente relativas ao banco de dados de automações ausentes no .env")
 
-AUTOMACOES_DB=os.environ.get("AUTOMACOES_DB")
-AUTOMACOES_HOST=os.environ.get("AUTOMACOES_HOST")
-AUTOMACOES_PORT=os.environ.get("AUTOMACOES_PORT")
-AUTOMACOES_USER=os.environ.get("AUTOMACOES_USER")
-AUTOMACOES_PASS=os.environ.get("AUTOMACOES_PASS")
-
-if not AUTOMACOES_DB or not AUTOMACOES_HOST \
-    or not AUTOMACOES_PORT or not AUTOMACOES_USER \
-    or not AUTOMACOES_PASS:
-    raise EnvironmentError("Variáveis de ambiente relativas ao banco de dados de automações ausentes no .env")
 
 pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="botGLPI",
@@ -251,9 +241,6 @@ def handle_glpi_webhook():
     if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") :
         cadastro_fornecedor(data)
 
-    print(f"\ndata: {data}\n")
-    if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") :
-        cadastro_fornecedor(data)
 
     try:
         if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:       
