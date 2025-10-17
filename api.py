@@ -125,7 +125,7 @@ def extrair_dados_de_tabela_html(html_content: str) -> dict:
                 
     return dados_extraidos
 
-def cadastro_fornecedor(id):
+def grava_chamado_cadastro_fornecedor(id):
     """Registra no banco de dados de automações um novo chamado de cadastro de fornecedor."""
     # dados = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", "Conteúdo"))
         
@@ -171,12 +171,21 @@ def handle_glpi_webhook():
     print('entrou em /webhook')
     data = request.get_json()
     if data is None:
-        return jsonify({"error": "Invalid JSON or no JSON received"}), 400
+       return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
     print(f"{datetime.now()}\t/webhook\taction: {data.get('ticket').get('action')}\tticket_id: {data.get('ticket').get('id')}")
+    
+
     if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") :
-        id = data.get("ticket", []).get("id")
-        cadastro_fornecedor(id)
+        dados_html = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", []))
+            
+        if isinstance(dados_html, list) and len(dados_html) > 0:
+            dados_html = dados_html[0]
+
+        novo_cadastro = dados_html['Novo Cadastro ou Alteração de algum já existente?']
+        if novo_cadastro != 'ALTERAÇÃO': # ai pular e não inserir
+            id = data.get("ticket", []).get("id")
+            grava_chamado_cadastro_fornecedor(id)
 
 
     try:
