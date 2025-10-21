@@ -176,14 +176,14 @@ def handle_glpi_webhook():
     print(f"{datetime.now()}\t/webhook\taction: {data.get('ticket').get('action')}\tticket_id: {data.get('ticket').get('id')}")
     
 
-    if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") :
+    if str(data.get("ticket", []).get("title")).startswith("Cadastro Fornecedor") and data.get('ticket', []).get('action', '') == "Novo chamado":
         dados_html = extrair_dados_de_tabela_html(data.get("ticket", []).get("content", []))
             
         if isinstance(dados_html, list) and len(dados_html) > 0:
             dados_html = dados_html[0]
 
         novo_cadastro = dados_html['Novo Cadastro ou Alteração de algum já existente?']
-        if novo_cadastro != 'ALTERAÇÃO': # ai pular e não inserir
+        if novo_cadastro != 'ALTERAÇÃO': 
             id = data.get("ticket", []).get("id")
             grava_chamado_cadastro_fornecedor(id)
 
