@@ -189,7 +189,7 @@ def handle_glpi_webhook():
             id = data.get("ticket", []).get("id")
             grava_chamado_cadastro_fornecedor(id)
             
-    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Orçamento"):
+    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Orçamento") and str(data.get('ticket', []).get('action', '')) == "Novo chamado":
         id_chamado = data.get("ticket", []).get("id")
         body = {
             "id_chamado": id_chamado
@@ -533,10 +533,10 @@ def send_message(data):
     # print(response.text)
 
 def chat_worker():
-    print("chat_worker iniciado!")
+    # print("chat_worker iniciado!")
     while True:
         payload = chat_queue.get()
-        print(f"Processando payload na fila: {payload}")
+        # print(f"Processando payload na fila: {payload}")
         try:
             start_chat(payload)
         except Exception as e:
@@ -546,7 +546,7 @@ def chat_worker():
             chat_queue.task_done()
 
 def enqueue_chat(payload):
-    print(f"Enfileirando payload: {payload}")
+    # print(f"Enfileirando payload: {payload}")
     chat_queue.put(payload)
 
 import json
