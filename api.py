@@ -47,6 +47,8 @@ AUTOMACOES_PORT=os.environ.get("AUTOMACOES_PORT")
 AUTOMACOES_USER=os.environ.get("AUTOMACOES_USER")
 AUTOMACOES_PASS=os.environ.get("AUTOMACOES_PASS")
 
+API_PRECO_VENDA_URL=os.environ.get("API_PRECO_VENDA_URL")
+
 if not AUTOMACOES_DB or not AUTOMACOES_HOST \
     or not AUTOMACOES_PORT or not AUTOMACOES_USER \
     or not AUTOMACOES_PASS:
@@ -186,6 +188,21 @@ def handle_glpi_webhook():
         if novo_cadastro != 'ALTERAÇÃO': 
             id = data.get("ticket", []).get("id")
             grava_chamado_cadastro_fornecedor(id)
+            
+    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Orçamento"):
+        id_chamado = data.get("ticket", []).get("id")
+        body = {
+            "id_chamado": id_chamado
+        }
+        response = requests.post(f"{API_PRECO_VENDA_URL}/ticket", json=body)
+        
+        response.raise_for_status()
+        
+        try:
+            print(response.json())
+        except:
+            print(response.text)
+        
 
 
     try:

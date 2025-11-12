@@ -1,0 +1,55 @@
+{
+    "author": {
+        "id": "333",
+        "name": "Pedro Coutinho",
+        "mobile": "556481154742"
+    },
+    "ticket": {
+        "observergroups": "",
+        "action": "Atualização de um chamado",
+        "category": "Central de cadastros",
+        "closedate": "",
+        "creationdate": "12-11-2025 16:25",
+        "entity": {
+            "name": "BRG Geradores > Controladoria",
+            "registration_number": ""
+        },
+        "globalvalidation": "Não está sujeita a aprovação",
+        "id": "0012284",
+        "lastupdater": "Pedro Coutinho",
+        "openbyuser": "Pedro Coutinho",
+        "shortentity": "Controladoria",
+        "solution": {
+            "approval": {
+                "author": "",
+                "date": "",
+                "description": ""
+            },
+            "author": "",
+            "description": "",
+            "type": ""
+        },
+        "satisfaction": {
+            "url": "https://glpi.brggeradores.com.br/front/ticket.form.php?id=0012284&forcetab=Ticket$3"
+        },
+        "solvedate": "",
+        "status": "Novo",
+        "title": "Solicitação de Orçamento - 1 Produtos",
+        "content": "",
+        "url": "https://glpi.brggeradores.com.br/index.php?redirect=ticket_0012284"
+    },
+    "validations": {
+        "answer": {
+            "title": ""
+        },
+        "author": "",
+        "commentsubmission": "",
+        "commentvalidation": "",
+        "status": "",
+        "submission": "",
+        "submissiondate": "",
+        "validationdate": "",
+        "validator": ""
+    },
+    "documents": ""
+}

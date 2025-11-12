@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+
+<html  dir="ltr" lang="en" xml:lang="en">
+<head>
+   <title>Downloading package | Moodle downloads</title>
+    <link rel="shortcut icon" sizes="64x64" href="https://download.moodle.org/theme/moodleorg/pix/favicons/favicon.ico">
+<link rel="icon" href="https://download.moodle.org/theme/moodleorg/pix/favicons/favicon-32.webp" sizes="32x32">
+<link rel="icon" href="https://download.moodle.org/theme/moodleorg/pix/favicons/favicon-192.webp" sizes="192x192">
+<link rel="apple-touch-icon" href="https://download.moodle.org/theme/moodleorg/pix/favicons/favicon-180.webp">
+<meta name="msapplication-TileColor" content="#FFFFFF">
+<meta name="msapplication-TileImage" content="https://download.moodle.org/theme/moodleorg/pix/favicons/favicon-270.png">
+    <meta property="og:url" content="https://download.moodle.org/local/downloadmoodleorg/download.php">
+<meta property="twitter:url" content="https://download.moodle.org/local/downloadmoodleorg/download.php">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Downloading package | Moodle downloads">
+<meta property="og:image" content="https://download.moodle.org/theme/moodleorg/pix/moodle_logo_tm.png">
+<meta property="og:image:secure_url" content="https://download.moodle.org/theme/moodleorg/pix/moodle_logo_tm.png">
+<meta property="twitter:image" content="https://download.moodle.org/theme/moodleorg/pix/moodle_logo_tm.png">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="moodle, Downloading package | Moodle downloads" />
+<link rel="stylesheet" type="text/css" href="https://download.moodle.org/theme/yui_combo.php?rollup/3.18.1/yui-moodlesimple-min.css" /><script id="firstthemesheet" type="text/css">/** Required in order to fix style inclusion problems in IE with YUI **/</script><link rel="stylesheet" type="text/css" href="https://download.moodle.org/theme/styles.php/moodleorg/1760092790_1757400940/all" />
+<script>
+//<![CDATA[
+var M = {}; M.yui = {};
+M.pageloadstarttime = new Date();
+M.cfg = {"wwwroot":"https:\/\/download.moodle.org","apibase":"https:\/\/download.moodle.org\/r.php\/api","homeurl":{},"sesskey":"1a56E18T9w","sessiontimeout":"28800","sessiontimeoutwarning":"1200","themerev":"1760092790","slasharguments":1,"theme":"moodleorg","iconsystemmodule":"core\/icon_system_fontawesome","jsrev":"1757401008","admin":"admin","svgicons":true,"usertimezone":"Europe\/London","language":"en","courseId":1,"courseContextId":2,"contextid":1,"contextInstanceId":0,"langrev":1757401008,"templaterev":"1757401008","siteId":1,"userId":0};var yui1ConfigFn = function(me) {if(/-skin|reset|fonts|grids|base/.test(me.name)){me.type='css';me.path=me.path.replace(/\.js/,'.css');me.path=me.path.replace(/\/yui2-skin/,'/assets/skins/sam/yui2-skin')}};
+var yui2ConfigFn = function(me) {var parts=me.name.replace(/^moodle-/,'').split('-'),component=parts.shift(),module=parts[0],min='-min';if(/-(skin|core)$/.test(me.name)){parts.pop();me.type='css';min=''}
+if(module){var filename=parts.join('-');me.path=component+'/'+module+'/'+filename+min+'.'+me.type}else{me.path=component+'/'+component+'.'+me.type}};
+YUI_config = {"debug":false,"base":"https:\/\/download.moodle.org\/lib\/yuilib\/3.18.1\/","comboBase":"https:\/\/download.moodle.org\/theme\/yui_combo.php?","combine":true,"filter":null,"insertBefore":"firstthemesheet","groups":{"yui2":{"base":"https:\/\/download.moodle.org\/lib\/yuilib\/2in3\/2.9.0\/build\/","comboBase":"https:\/\/download.moodle.org\/theme\/yui_combo.php?","combine":true,"ext":false,"root":"2in3\/2.9.0\/build\/","patterns":{"yui2-":{"group":"yui2","configFn":yui1ConfigFn}}},"moodle":{"name":"moodle","base":"https:\/\/download.moodle.org\/theme\/yui_combo.php?m\/1757401008\/","combine":true,"comboBase":"https:\/\/download.moodle.org\/theme\/yui_combo.php?","ext":false,"root":"m\/1757401008\/","patterns":{"moodle-":{"group":"moodle","configFn":yui2ConfigFn}},"filter":null,"modules":{"moodle-core-actionmenu":{"requires":["base","event","node-event-simulate"]},"moodle-core-blocks":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification"]},"moodle-core-chooserdialogue":{"requires":["base","panel","moodle-core-notification"]},"moodle-core-dragdrop":{"requires":["base","node","io","dom","dd","event-key","event-focus","moodle-core-notification"]},"moodle-core-event":{"requires":["event-custom"]},"moodle-core-handlebars":{"condition":{"trigger":"handlebars","when":"after"}},"moodle-core-lockscroll":{"requires":["plugin","base-build"]},"moodle-core-maintenancemodetimer":{"requires":["base","node"]},"moodle-core-notification":{"requires":["moodle-core-notification-dialogue","moodle-core-notification-alert","moodle-core-notification-confirm","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-core-notification-dialogue":{"requires":["base","node","panel","escape","event-key","dd-plugin","moodle-core-widget-focusafterclose","moodle-core-lockscroll"]},"moodle-core-notification-alert":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-confirm":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-exception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-ajaxexception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core_availability-form":{"requires":["base","node","event","event-delegate","panel","moodle-core-notification-dialogue","json"]},"moodle-course-categoryexpander":{"requires":["node","event-key"]},"moodle-course-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-course-coursebase","moodle-course-util"]},"moodle-course-management":{"requires":["base","node","io-base","moodle-core-notification-exception","json-parse","dd-constrain","dd-proxy","dd-drop","dd-delegate","node-event-delegate"]},"moodle-course-util":{"requires":["node"],"use":["moodle-course-util-base"],"submodules":{"moodle-course-util-base":{},"moodle-course-util-section":{"requires":["node","moodle-course-util-base"]},"moodle-course-util-cm":{"requires":["node","moodle-course-util-base"]}}},"moodle-form-dateselector":{"requires":["base","node","overlay","calendar"]},"moodle-form-shortforms":{"requires":["node","base","selector-css3","moodle-core-event"]},"moodle-question-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-question-searchform":{"requires":["base","node"]},"moodle-availability_completion-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_date-form":{"requires":["base","node","event","io","moodle-core_availability-form"]},"moodle-availability_grade-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_group-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_grouping-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_profile-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-mod_assign-history":{"requires":["node","transition"]},"moodle-mod_quiz-autosave":{"requires":["base","node","event","event-valuechange","node-event-delegate","io-form","datatype-date-format"]},"moodle-mod_quiz-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-base","moodle-mod_quiz-util-page","moodle-mod_quiz-util-slot","moodle-course-util"]},"moodle-mod_quiz-modform":{"requires":["base","node","event"]},"moodle-mod_quiz-questionchooser":{"requires":["moodle-core-chooserdialogue","moodle-mod_quiz-util","querystring-parse"]},"moodle-mod_quiz-quizbase":{"requires":["base","node"]},"moodle-mod_quiz-toolboxes":{"requires":["base","node","event","event-key","io","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-slot","moodle-core-notification-ajaxexception"]},"moodle-mod_quiz-util":{"requires":["node","moodle-core-actionmenu"],"use":["moodle-mod_quiz-util-base"],"submodules":{"moodle-mod_quiz-util-base":{},"moodle-mod_quiz-util-slot":{"requires":["node","moodle-mod_quiz-util-base"]},"moodle-mod_quiz-util-page":{"requires":["node","moodle-mod_quiz-util-base"]}}},"moodle-message_airnotifier-toolboxes":{"requires":["base","node","io"]},"moodle-report_eventlist-eventfilter":{"requires":["base","event","node","node-event-delegate","datatable","autocomplete","autocomplete-filters"]},"moodle-report_loglive-fetchlogs":{"requires":["base","event","node","io","node-event-delegate"]},"moodle-gradereport_history-userselector":{"requires":["escape","event-delegate","event-key","handlebars","io-base","json-parse","moodle-core-notification-dialogue"]},"moodle-qbank_editquestion-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-tool_lp-dragdrop-reorder":{"requires":["moodle-core-dragdrop"]},"moodle-assignfeedback_editpdf-editor":{"requires":["base","event","node","io","graphics","json","event-move","event-resize","transition","querystring-stringify-simple","moodle-core-notification-dialog","moodle-core-notification-alert","moodle-core-notification-warning","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]}}},"gallery":{"name":"gallery","base":"https:\/\/download.moodle.org\/lib\/yuilib\/gallery\/","combine":true,"comboBase":"https:\/\/download.moodle.org\/theme\/yui_combo.php?","ext":false,"root":"gallery\/1757401008\/","patterns":{"gallery-":{"group":"gallery"}}}},"modules":{"core_filepicker":{"name":"core_filepicker","fullpath":"https:\/\/download.moodle.org\/lib\/javascript.php\/1757401008\/repository\/filepicker.js","requires":["base","node","node-event-simulate","json","async-queue","io-base","io-upload-iframe","io-form","yui2-treeview","panel","cookie","datatable","datatable-sort","resize-plugin","dd-plugin","escape","moodle-core_filepicker","moodle-core-notification-dialogue"]},"core_comment":{"name":"core_comment","fullpath":"https:\/\/download.moodle.org\/lib\/javascript.php\/1757401008\/comment\/comment.js","requires":["base","io-base","node","json","yui2-animation","overlay","escape"]},"local_downloadmoodleorg":{"name":"local_downloadmoodleorg","fullpath":"https:\/\/download.moodle.org\/lib\/javascript.php\/1757401008\/local\/downloadmoodleorg\/module.js","requires":[]}},"logInclude":[],"logExclude":[],"logLevel":null};
+M.yui.loader = {modules: {}};
+
+//]]>
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P26VCTMD');</script>
+<!-- End Google Tag Manager -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body  id="page-local-downloadmoodleorg-download" class="format-site  path-local path-local-downloadmoodleorg dir-ltr lang-en yui-skin-sam yui3-skin-sam download-moodle-org pagelayout-base course-1 context-1 notloggedin theme uses-drawers">
+<div class="toast-wrapper mx-auto py-0 fixed-top" role="status" aria-live="polite"></div>
+<div id="page-wrapper" class="d-print-block">
+
+    <div>
+    <a class="visually-hidden-focusable" href="#maincontent">Skip to main content</a>
+</div><script src="https://download.moodle.org/lib/javascript.php/1757401008/lib/polyfills/polyfill.js"></script>
+<script src="https://download.moodle.org/theme/yui_combo.php?rollup/3.18.1/yui-moodlesimple-min.js"></script><script src="https://download.moodle.org/lib/javascript.php/1757401008/lib/javascript-static.js"></script>
+<script>
+//<![CDATA[
+document.body.className += ' jsenabled';
+//]]>
+</script>
+
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P26VCTMD"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav id="moodlesitestopnavbar" class="navbar fixed-top navbar-expand-lg navbar-light bg-white border-0 justify-content-start" style="z-index: 1040;" dir="ltr">
+    <div class="waffle-menu">
+        <a href="https://moodle.org" class="navbar-brand position-lg-fixed d-none d-lg-flex align-items-center m-0 p-0 aabtn">
+            <img src="https://download.moodle.org/theme/moodleorg/pix/moodle_logo_TM.svg" class="logo mr-1" height="42px" alt="Moodle downloads home">
+        </a>
+        <button class="navbar-toggler mt-2 mr-2" type="button" data-bs-toggle="collapse" data-bs-target="#sitetopnavbar" aria-controls="sitetopnavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon ml-2"></span>
+        </button>
+    </div>
+
+    <a href="https://moodle.org/">
+    <img src="https://download.moodle.org/theme/moodleorg/pix/moodle_logo_TM.svg" class="d-lg-none mt-2" height="32px" alt="Moodle.org" style="margin-left: 1rem;">
+    </a>
+
+
+    <div class="collapse navbar-collapse justify-content-end mt-2" id="sitetopnavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item Forums">
+                <a class="nav-link " href="https://moodle.org/course"><span>Forums</span></a>
+            </li>
+            <li class="nav-item documentation">
+                <a class="nav-link" href="https://docs.moodle.org"><span>Documentation</span></a>
+            </li>
+            <li class="nav-item plugins">
+                <a class="nav-link " href="https://moodle.org/plugins"><span>Plugins</span></a>
+            </li>
+            <li class="nav-item download">
+                <a class="nav-link active" href="https://download.moodle.org"><span>Downloads</span></a>
+            </li>
+            <li class="nav-item demo">
+                <a class="nav-link " href="https://moodle.org/demo"><span>Demo</span></a>
+            </li>
+            <li class="nav-item development">
+                <a class="nav-link" href="https://moodledev.io/"><span>Development</span></a>
+            </li>
+            <li class="nav-item translation">
+                <a class="nav-link " href="https://lang.moodle.org"><span>Translation</span></a>
+            </li>
+            <li class="nav-item tracker">
+                <a class="nav-link" href="https://moodle.atlassian.net"><span>Tracker</span></a>
+            </li>
+            <li class="nav-item search d-none d-lg-flex">
+                <a class="nav-link icon-no-margin" href="https://moodle.org/public/search"><span class="sr-only">Search</span>
+                    <i class="fa fa-search icon"></i>
+                </a>
+            </li>
+
+            <hr height="8px" >
+            <li class="nav-item search-mob d-flex d-lg-none">
+                <a class="nav-link icon-no-margin" href="https://moodle.org/public/search">
+                    <i class="fa fa-search icon mr-2"></i>
+                    Search
+                </a>
+            </li>
+            <li class="nav-item search d-flex d-lg-none">
+                <a class="moodle_sites nav-link icon-no-margin"  >
+                    <svg width="18" height="18" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="3" cy="3.5" r="3" fill="#194866"></circle>
+                        <circle cx="3" cy="11.5" r="3" fill="#194866"></circle>
+                        <circle cx="3" cy="19.5" r="3" fill="#194866"></circle>
+                        <circle cx="11" cy="3.5" r="3" fill="#194866"></circle>
+                        <circle cx="11" cy="11.5" r="3" fill="#194866"></circle>
+                        <circle cx="11" cy="19.5" r="3" fill="#194866"></circle>
+                        <circle cx="19" cy="3.5" r="3" fill="#194866"></circle>
+                        <circle cx="19" cy="11.5" r="3" fill="#194866"></circle>
+                        <circle cx="19" cy="19.5" r="3" fill="#194866"></circle>
+                    </svg>
+                    <span class="mx-2 ">Other Moodle sites <img class="ml-5 mt-n1" src="https://download.moodle.org/theme/moodleorg/pix/arrow-r.svg" width="10" height="10">
+                    </span>
+                </a>
+            </li>
+            <div class="d-none d-lg-flex">
+            
+            <li class="nav-item menu">
+                <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false" aria-haspopup="true"
+                    aria-label="Other Moodle sites" aria-controls="dropdown-popup"
+                    title="Other Moodle sites">
+                    <svg width="22" height="23" viewBox="0 0 22 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="3" cy="3.5" r="3" fill="#194866"></circle>
+                        <circle cx="3" cy="11.5" r="3" fill="#194866"></circle>
+                        <circle cx="3" cy="19.5" r="3" fill="#194866"></circle>
+                        <circle cx="11" cy="3.5" r="3" fill="#194866"></circle>
+                        <circle cx="11" cy="11.5" r="3" fill="#194866"></circle>
+                        <circle cx="11" cy="19.5" r="3" fill="#194866"></circle>
+                        <circle cx="19" cy="3.5" r="3" fill="#194866"></circle>
+                        <circle cx="19" cy="11.5" r="3" fill="#194866"></circle>
+                        <circle cx="19" cy="19.5" r="3" fill="#194866"></circle>
+                    </svg>
+                </a>
+            
+                <div class="dropdown-menu dropdown-menu-end" id="dropdown-popup">
+                    <div class="p-3 pathways">
+                        <div class="pb-1 heading">What are you looking for?</div>
+                        <hr>
+                        <p>
+                            Learn about Moodle's products, like Moodle LMS or Moodle Workplace, or find a Moodle Certified Service Provider.<br>
+                            <br>
+                            <a href="https://moodle.com">Moodle.com <i class="fa fa-long-arrow-right icon"></i></a>
+                        </p>
+                        <hr>
+                        <p>
+                             Our social network to share and curate open educational resources.<br>
+                            <br>
+                            <a href="https://moodle.net">MoodleNet <i class="fa fa-long-arrow-right icon"></i></a>
+                        </p>
+                        <hr>
+                        <p>
+                            Courses and programs to develop your skills as a Moodle educator, administrator, designer or developer.<br>
+                            <br>
+                            <a href="https://moodle.academy">Moodle Academy <i class="fa fa-long-arrow-right icon"></i></a>
+                        </p>
+                    </div>
+                </div>
+            </li>
+            
+            </div>
+        </ul>
+        <ul class="sites-nav navbar-nav d-none">
+        <img class="ml-n1 back" src="https://download.moodle.org/theme/moodleorg/pix/arrow-left.svg" width="24" height="24">
+           <div class="pt-2 pathways">
+            <p>
+                <a href="https://moodle.com">Moodle.com</a>
+                <br>
+                Learn about Moodle's products, like Moodle LMS or Moodle Workplace, or find a Moodle Certified Service Provider.<br>
+            </p>
+            <hr>
+            <p>
+                <a href="https://moodle.net">MoodleNet</a>
+                <br>
+                Our social network to share and curate open educational resources.<br>
+            </p>
+            <hr>
+            <p>
+                <a href="https://moodle.academy">Moodle Academy</a>
+                <br>
+                Courses and programs to develop your skills as a Moodle educator, administrator, designer or developer.<br>
+            </p>
+        </div>
+        </ul>
+
+    </div>
+
+
+</nav>
+
+
+    
+    
+
+<div  class="drawer drawer-left drawer-primary d-print-none not-initialized" data-region="fixed-drawer" id="theme_boost-drawers-primary" data-preference="" data-state="show-drawer-primary" data-forceopen="0" data-close-on-resize="1">
+    <div class="drawerheader">
+        <button
+            class="btn btn-icon drawertoggle hidden"
+            data-toggler="drawers"
+            data-action="closedrawer"
+            data-target="theme_boost-drawers-primary"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="Close drawer"
+        >
+            <i class="icon fa fa-xmark fa-fw " aria-hidden="true" ></i>
+        </button>
+                <a
+            href="https://download.moodle.org/"
+            title="Moodle downloads"
+            data-region="site-home-link"
+            class="aabtn text-reset d-flex align-items-center py-1 h-100"
+        >
+                <span class="sitename" title="Moodle downloads">Moodle downloads</span>
+        </a>
+
+        <div class="drawerheadercontent hidden">
+            
+        </div>
+    </div>
+    <div class="drawercontent drag-container" data-usertour="scroller">
+                <div class="list-group">
+                <a href="https://download.moodle.org/" class="list-group-item list-group-item-action active " aria-current="true">
+                    Home
+                </a>
+        </div>
+
+    </div>
+</div>
+    <div id="page" data-region="mainpage" data-usertour="scroller" class="drawers   drag-container">
+        <div id="topofscroll" class="main-inner">
+            <div class="drawer-toggles d-flex">
+            </div>
+            <header id="page-header" class="header-maxwidth d-print-none">
+    <div class="w-100">
+        <div class="d-flex flex-wrap">
+            <div id="page-navbar">
+                <nav aria-label="Navigation bar">
+    <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="https://download.moodle.org/"
+                        
+                        
+                        
+                    >
+                        Home
+                    </a>
+                </li>
+        
+                <li class="breadcrumb-item">
+                    <span >
+                        Downloading package | Moodle downloads
+                    </span>
+                </li>
+        </ol>
+</nav>
+            </div>
+            <div class="ms-auto d-flex">
+                
+            </div>
+            <div id="course-header">
+                
+            </div>
+        </div>
+        <div class="d-flex align-items-center">
+                    <div class="me-auto">
+                        <div class="page-context-header d-flex flex-wrap align-items-center mb-2">
+    <div class="page-header-headings">
+        <h1 class="h2 mb-0"></h1>
+    </div>
+</div>
+                    </div>
+            <div class="header-actions-container ms-auto" data-region="header-actions-container">
+            </div>
+        </div>
+    </div>
+</header>
+            <div id="page-content" class="pb-3 d-print-block">
+                <div id="region-main-box">
+                    <div id="region-main">
+
+                        <span class="notifications" id="user-notifications"></span>
+                        <div role="main"><span id="maincontent"></span><div class="box py-3 generalbox"><h2>Starting download for moodle-latest-501.zip ...</h2><p style="text-align: center">If the download doesn't start automatically then <a href="/download.php/direct/stable501/moodle-latest-501.zip">click here to download manually</a>.</p><div class="well" style="max-width: 800px; margin: 3em auto;"><p class="lead"><strong>Thank you for using Moodle!</strong><br>We believe that software, especially
+        educational tools, should always be open and free. We rely on our community to support and help us to
+        continuously improve our LMS. Support our developers by making a <a href="https://moodle.com/donations/?utm_source=CTA%20banner&utm_medium=platform&utm_campaign=name~donate20lms+cat~moodlebrand+mp~no+type~landingpage+date~05-20"
+        target="_blank">donation</a>.</p><a href="https://moodle.com/donations/?utm_source=CTA%20banner&amp;utm_medium=platform&amp;utm_campaign=name~donate20lms+cat~moodlebrand+mp~no+type~landingpage+date~05-20"><img class="img-responsive" style="display: block; margin: 1em auto;" src="https://download.moodle.org/theme/image.php/moodleorg/local_downloadmoodleorg/1760092790/banner-donate" alt="Donate to Moodle - Contribute today" /></a></div><div class="downloadinfo">
+              <h3 style="text-align: center">Useful information:</h3>
+              <table style="align: center; margin-left: auto; margin-right: auto;">
+              <tr><td valign="top" style="text-align: center">
+              <h3><a title="How you can install Moodle yourself" href="http://docs.moodle.org/en/Installing_Moodle">How to Install Moodle</a>&nbsp;&nbsp;</h3>
+              </td><td valign="top" style="text-align: center">
+              <h3>&nbsp;&nbsp;<a title="Upgrading a Moodle from an older version to a newer one" href="http://docs.moodle.org/en/Upgrading">How to Upgrade Moodle</a></h3>
+              </td></tr>
+              </table>
+              </div></div></div>
+                        
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer id="page-footer" class="footer-popover bg-white">
+            <div data-region="footer-container-popover">
+                <button class="btn btn-icon bg-secondary icon-no-margin btn-footer-popover" data-action="footer-popover" aria-label="Show footer">
+                    <i class="icon fa fa-question fa-fw " aria-hidden="true" ></i>
+                </button>
+            </div>
+                <div class="footer-dark text-light brand-footer" dir="LTR">
+<div class="container-fluid">
+<div class="row">
+<div class="col-md-12 col-lg-4 col-xl-4 d-none d-md-flex flex-md-row flex-lg-column align-items-center order-md-last order-lg-0 mt-md-3 mt-lg-0">
+<div class="d-flex flex-md-column"><a href="https://moodle.com/"><img class="logo" src="https://stats.moodle.org/theme/moodleorg/pix/logo-footer.svg" alt="Logo"></a> <a href="https://moodle.com/bcorp/"><img class="logo" title="This company meets the highest standards of social and environmental impact" src="https://stats.moodle.org/theme/moodleorg/pix/b-corp-footer.png" alt="This company meets the highest standards of social and environmental impact"></a></div>
+<div class="bg-transparent border-0 d-flex mt-5 mt-md-1 ml-md-10 ml-lg-0 donations">
+<div>
+<h5 class="text-white line-height-4 mb-2 ">Empowering educators to improve our world</h5>
+<div class="card-text d-flex flex-md-row flex-lg-column"><a class="btn btn-arrow mr-md-5" href="https://moodle.org/donations/"> Donate </a> <a class="btn btn-arrow" href="https://moodle.com/shop/"> Shop </a></div>
+</div>
+</div>
+</div>
+<div class="col-md-12 col-lg-8 col-xl-8 order-md-first order-lg-0">
+<div class="card-deck d-flex flex-column flex-md-row">
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Moodle <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://docs.moodle.org/en/About_Moodle ">About Moodle</a></li>
+<li><a href="https://moodle.org/security/">Security alerts</a></li>
+<li><a href="https://stats.moodle.org/">Statistics</a></li>
+<li><a href="https://moodle.org/mod/page/view.php?id=8191">Contact</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Support <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://docs.moodle.org/">Documentation</a></li>
+<li><a href="https://moodle.org/forums/">Forums</a></li>
+<li><a href="https://moodle.com/solutions/certified-service-providers/">Service Providers</a></li>
+<li><a href="https://moodle.org/mod/data/view.php?d=54">Jobs database</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Get Involved <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://moodledev.io/general/development/gettingstarted">Development</a></li>
+<li><a href="https://moodle.org/plugins/?q=type:theme">Themes</a></li>
+<li><a href="https://lang.moodle.org/">Translation</a></li>
+<li><a href="https://moodle.org/ux">User Experience</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Contributions <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://moodle.org/dev/">Developer credits</a></li>
+<li><a href="https://lang.moodle.org/local/amos/credits.php">Translator credits</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Downloads <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://download.moodle.org/releases/latest/">Latest release</a></li>
+<li><a href="https://moodle.org/plugins/">Plugins</a></li>
+<li><a href="https://download.moodle.org/mobile/">Moodle App</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Tracker <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://tracker.moodle.org/browse/MDL">Browse issues</a></li>
+<li><a href="https://moodle.org/mod/page/view.php?id=8751">Suggest a feature</a></li>
+<li><a href="https://moodle.org/mod/page/view.php?id=8750">Report a bug</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0" style="border-bottom: 0px !important;">
+<div class="inner-card-body">
+<h5 class="card-title text-white mb-2">Development <i class="fa fa-plus d-lg-none d-md-none"></i></h5>
+<div class="card-text">
+<ul class="unlist footer-list link">
+<li><a href="https://moodledev.io/">Dev Docs</a></li>
+<li><a href="https://moodledev.io/general/community/roadmap">Roadmap</a></li>
+<li><a href="https://moodle.org/mod/forum/view.php?id=55">Developer forum</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="card bg-transparent m-0 border-0 d-flex d-md-none flex-column footer-logo mt-6 mx-auto">
+<div class="inner-card-body pl-1">
+<h5 class="text-white line-height-4 mb-2">Empowering educators to improve our world</h5>
+<div class="card-text d-flex"><a class="btn btn-arrow mr-4" href="https://moodle.org/donations/"> Donate </a> <a class="btn btn-arrow d-flex" href="https://moodle.com/shop/"> Shop </a></div>
+</div>
+</div>
+<div class="social-icons-block mb-6 mt-7 d-flex d-md-none mx-auto"><a class="facebook social-icon mr-6" href="https://www.facebook.com/moodle/" aria-label="Go to Facebook"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/m_facebook.svg" width="32" height="32"> </a> <a class="linkedin social-icon mr-6" title="Go to LinkedIn" href="https://www.linkedin.com/company/moodle"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/m_linkedin.svg" width="32" height="32"> </a> <a class="twitter social-icon mr-6" title="Go to Twitter" href="https://twitter.com/moodle"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/m_twitter.svg" width="32" height="32"> </a> <a class="youtube social-icon mr-6" title="Go to Youtube" href="https://www.youtube.com/moodle"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/m_youtube.svg" width="32" height="32"> </a></div>
+<a class="d-flex d-md-none mb-6 ml-n3" href="https://moodle.com/bcorp/"><img class="logo mx-auto" title="This company meets the highest standards of social and environmental impact" src="https://stats.moodle.org/theme/moodleorg/pix/b-corp-footer.png" alt="This company meets the highest standards of social and environmental impact" width="204" height="104"></a></div>
+</div>
+</div>
+<hr class="my-5 d-none d-lg-flex ml-lg-9 d-md-none row" style="border-top: 1px solid #476d85;" width="90%"><hr class="my-5 d-none d-lg-none ml-lg-9 d-md-flex row" width="100%">
+<div class="row ml-4 ml-lg-7 pl-lg-5 ml-md-n3">
+<div class="col-md-3 col-lg-2 link text-small "><a href="https://moodle.org/mod/page/view.php?id=8753&amp;forceview=1">Accessibility Statement</a></div>
+<div class="col-md-2 col-lg-2 link text-small ml-lg-5"><a href="https://moodle.com/cookies-policy/">Cookies Policy</a></div>
+<div class="col-md-2 col-lg-2 link text-small ml-lg-n3"><a href="https://moodle.org/mod/page/view.php?id=7080&amp;forceview=1">Site Policy</a></div>
+<div class="col-md-2 col-lg-2 link text-small ml-lg-n5 "><a class="ml-lg-n2" href="https://moodle.com/privacy-notice/">Privacy Notice</a></div>
+<div class="col-md-3 col-lg-2 link text-small ml-lg-n4"><a href="https://moodle.com/trademarks/">Trademark Policy</a></div>
+<div class="social-icons-block d-none d-md-flex mt-md-5 mt-lg-0 ml-md-3"><a class="facebook social-icon" href="https://www.facebook.com/moodle/" aria-label="Go to Facebook"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/old/facebook.svg" width="20" height="20"> </a> <a class="linkedin social-icon" title="Go to LinkedIn" href="https://www.linkedin.com/company/moodle"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/old/linkedin.svg" width="20" height="20"> </a> <a class="twitter social-icon" title="Go to Twitter" href="https://twitter.com/moodle"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/old/twitter.svg" width="20" height="20"> </a> <a class="youtube social-icon" title="Go to Youtube" href="https://www.youtube.com/moodle"> <img src="https://stats.moodle.org/theme/moodleorg/pix/social/old/youtube.svg" width="20" height="20"> </a></div>
+</div>
+</div>
+</div>
+        
+            <div class="footer-content-popover container footer-dark bg-dark text-light" data-region="footer-content-popover">
+                <div class="footer-section p-3 border-bottom">
+                    <div class="logininfo">
+                        <div class="logininfo">You are not logged in. (<a href="https://download.moodle.org/login/index.php">Log in</a>)</div>
+                    </div>
+                    <div class="tool_usertours-resettourcontainer">
+                    </div>
+        
+                    <div class="tool_dataprivacy"><a href="https://download.moodle.org/admin/tool/dataprivacy/summary.php">Data retention summary</a></div><div><a class="mobilelink" href="https://download.moodle.org/mobile?version=2025041402&amp;lang=en&amp;iosappid=633359593&amp;androidappid=com.moodle.moodlemobile">Get the mobile app</a></div>
+                    <script>
+//<![CDATA[
+var require = {
+    baseUrl : 'https://download.moodle.org/lib/requirejs.php/1757401008/',
+    // We only support AMD modules with an explicit define() statement.
+    enforceDefine: true,
+    skipDataMain: true,
+    waitSeconds : 0,
+
+    paths: {
+        jquery: 'https://download.moodle.org/lib/javascript.php/1757401008/lib/jquery/jquery-3.7.1.min',
+        jqueryui: 'https://download.moodle.org/lib/javascript.php/1757401008/lib/jquery/ui-1.14.1/jquery-ui.min',
+        jqueryprivate: 'https://download.moodle.org/lib/javascript.php/1757401008/lib/requirejs/jquery-private'
+    },
+
+    // Custom jquery config map.
+    map: {
+      // '*' means all modules will get 'jqueryprivate'
+      // for their 'jquery' dependency.
+      '*': { jquery: 'jqueryprivate' },
+
+      // 'jquery-private' wants the real jQuery module
+      // though. If this line was not here, there would
+      // be an unresolvable cyclic dependency.
+      jqueryprivate: { jquery: 'jquery' }
+    }
+};
+
+//]]>
+</script>
+<script src="https://download.moodle.org/lib/javascript.php/1757401008/lib/requirejs/require.min.js"></script>
+<script>
+//<![CDATA[
+M.util.js_pending("core/first");
+require(['core/first'], function() {
+require(['core/prefetch'])
+;
+M.util.js_pending('filter_mathjaxloader/loader'); require(['filter_mathjaxloader/loader'], function(amd) {amd.configure({"mathjaxurl":"https:\/\/cdn.jsdelivr.net\/npm\/mathjax@3.2.2\/es5\/tex-mml-chtml.js","mathjaxconfig":"","lang":"en"}); M.util.js_complete('filter_mathjaxloader/loader');});;
+require(["media_videojs/loader"], function(loader) {
+    loader.setUp('en');
+});;
+
+require(['jquery'], function($) {
+    $(document).ready(function() {
+
+        var fluid = function() {
+            if ($(window).width() >= 992) {
+                $("#usernavigation").appendTo(".secondary-nav");
+                $('#usernavigation').removeClass('nav-mobile');
+               $(".sites-nav").addClass('d-none');
+               $('.navbar-nav').show();
+            } else {
+                $("#usernavigation").appendTo("#moodlesitestopnavbar");
+                $('#usernavigation').addClass('nav-mobile');
+                $("#usernavigation").show();
+            }
+        };
+
+        $('.moodle_sites').on('click', function() {
+        
+            $(".sites-nav").removeClass('d-none');
+            $('.navbar-nav').hide();
+            $(".sites-nav").show();
+            fluid();
+        });
+
+        $('.sites-nav .back').on('click', function() {
+        
+            $(".sites-nav").addClass('d-none');
+            $('.navbar-nav').show();
+            $(".sites-nav").hide();
+            fluid();
+        });
+
+        // Fire on DOM ready
+        fluid();
+
+        // Fire upon resize
+        $(window).resize(fluid);
+
+    });
+});
+;
+
+M.util.js_pending('theme_boost/drawers:load');
+require(['theme_boost/drawers'], function() {
+    M.util.js_complete('theme_boost/drawers:load');
+});
+;
+
+require(['jquery'], function($) {
+    $(document).ready(function() {
+        $('.footer-dark .card-title').on('click', function() {
+            if ($(window).width() < 754) {
+                $(this).next().toggle('1000');
+                $(this).find('i').toggleClass('fa-minus fa-plus');
+            }
+        });
+    });
+});
+
+require(['theme_boost/footer-popover'], function(FooterPopover) {
+    FooterPopover.init();
+});
+;
+
+M.util.js_pending('theme_boost/loader');
+require(['theme_boost/loader', 'theme_boost/drawer'], function(Loader, Drawer) {
+    Drawer.init();
+    M.util.js_complete('theme_boost/loader');
+});
+;
+M.util.js_pending('core/notification'); require(['core/notification'], function(amd) {amd.init(1, []); M.util.js_complete('core/notification');});;
+M.util.js_pending('core/log'); require(['core/log'], function(amd) {amd.setConfig({"level":"warn"}); M.util.js_complete('core/log');});;
+M.util.js_pending('core/page_global'); require(['core/page_global'], function(amd) {amd.init(); M.util.js_complete('core/page_global');});;
+M.util.js_pending('core/utility'); require(['core/utility'], function(amd) {M.util.js_complete('core/utility');});;
+M.util.js_pending('core/storage_validation'); require(['core/storage_validation'], function(amd) {amd.init(null); M.util.js_complete('core/storage_validation');});
+    M.util.js_complete("core/first");
+});
+//]]>
+</script>
+<script>
+//<![CDATA[
+M.str = {"moodle":{"lastmodified":"Last modified","name":"Name","error":"Error","info":"Information","yes":"Yes","no":"No","cancel":"Cancel","confirm":"Confirm","areyousure":"Are you sure?","closebuttontitle":"Close","unknownerror":"Unknown error","file":"File","url":"URL","collapseall":"Collapse all","expandall":"Expand all"},"repository":{"type":"Type","size":"Size","invalidjson":"Invalid JSON string","nofilesattached":"No files attached","filepicker":"File picker","logout":"Logout","nofilesavailable":"No files available","norepositoriesavailable":"Sorry, none of your current repositories can return files in the required format.","fileexistsdialogheader":"File exists","fileexistsdialog_editor":"A file with that name has already been attached to the text you are editing.","fileexistsdialog_filemanager":"A file with that name has already been attached","renameto":"Rename to \"{$a}\"","referencesexist":"There are {$a} links to this file","select":"Select"},"admin":{"confirmdeletecomments":"Are you sure you want to delete the selected comment(s)?","confirmation":"Confirmation"},"debug":{"debuginfo":"Debug info","line":"Line","stacktrace":"Stack trace"},"langconfig":{"labelsep":": "}};
+//]]>
+</script>
+<script>
+//<![CDATA[
+(function() { M.util.js_pending('random68f246399713a1'); Y.on('domready', function() {  M.util.js_pending('random68f246399713a1'); Y.use('local_downloadmoodleorg', function(Y) { M.local_downloadmoodleorg.download_after_delay(Y, "https:\/\/packaging.moodle.org\/stable501\/moodle-latest-501.zip");  M.util.js_complete('random68f246399713a1'); });  M.util.js_complete('random68f246399713a1'); });
+M.util.help_popups.setup(Y);
+ M.util.js_pending('random68f246399713a3'); Y.on('domready', function() { M.util.js_complete("init");  M.util.js_complete('random68f246399713a3'); });
+})();
+//]]>
+</script>
+
+                </div>
+                <div class="footer-section p-3">
+                    <div>Powered by <a href="https://moodle.com">Moodle</a></div>
+                </div>
+            </div>
+        
+            <div class="footer-content-debugging footer-dark bg-dark text-light">
+                <div class="container-fluid footer-dark-inner">
+                    
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+</div>
+
+
+</body></html>
