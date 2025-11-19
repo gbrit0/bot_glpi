@@ -170,8 +170,9 @@ def tudo():
 
 @app.route('/webhook', methods=['POST'])
 def handle_glpi_webhook():
-    print('entrou em /webhook')
+    # print('entrou em /webhook')
     data = request.get_json()
+    print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "\tWEBHOOK RECEBIDO\t", data)
     if data is None:
        return jsonify({"error": "Invalid JSON or no JSON received"}), 400
 
@@ -189,7 +190,7 @@ def handle_glpi_webhook():
             id = data.get("ticket", []).get("id")
             grava_chamado_cadastro_fornecedor(id)
             
-    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Orçamento") and str(data.get('ticket', []).get('action', '')) == "Novo chamado":
+    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Preço de Venda") and str(data.get('ticket', []).get('action', '')) == "Novo chamado":
         id_chamado = data.get("ticket", []).get("id")
         body = {
             "id_chamado": id_chamado
@@ -220,7 +221,7 @@ def handle_glpi_webhook():
         elif data.get('ticket').get('lastupdater') == data.get('author').get('name'): # Mensagem do autor Enviar para o técnico
             # print(f"------ {data.get('author').get('name')} ------\n")
         
-            print(f"{data}\n")
+            # print(f"{data}\n")
             id_chamado = data.get('ticket').get('id')
             nome_tecnico, telefone_tecnico = busca_dados_tecnico(id_chamado)
             mensagem_do_autor(nome_tecnico, telefone_tecnico, data)
