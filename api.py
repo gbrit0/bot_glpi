@@ -161,7 +161,7 @@ def grava_chamado_cadastro_fornecedor(id):
 @app.route('/', methods=['GET', 'POST'])
 def tudo():
     data = request.get_json()
-    # print(data)
+    print(data)
 
     if data is None:
         return jsonify({"error": "Invalid JSON or no JSON received"}), 400
@@ -190,19 +190,43 @@ def handle_glpi_webhook():
             id = data.get("ticket", []).get("id")
             grava_chamado_cadastro_fornecedor(id)
             
-    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Preço de Venda") and str(data.get('ticket', []).get('action', '')) == "Novo chamado":
-        id_chamado = data.get("ticket", []).get("id")
-        body = {
-            "id_chamado": id_chamado
-        }
-        response = requests.post(f"{API_PRECO_VENDA_URL}/ticket", json=body)
+    elif str(data.get("ticket", []).get("title")).startswith("Solicitação de Preço de Venda"):
         
-        response.raise_for_status()
-        
-        try:
-            print(response.json())
-        except:
-            print(response.text)
+        if str(data.get('ticket', []).get('action', '')) == "Resposta de pedido de validação" \
+            and str(data.get("validations", []).get("status")) == "Concedida":
+                
+            # descricao = data.get("ticket", []).get("solution", []).get("approval", []).get("description", "ERRO AO OBTER DESCRIÇÂO")
+            descricao = data.get("validations", []).get("commentsubmission", "ERRO AO OBTER DESCRIÇÂO")
+            id_chamado = data.get("ticket", []).get("id")
+            
+            body = {
+                "id_chamado": f"{id_chamado}",
+                "descricao": f"{descricao}"
+            }
+            
+            response = requests.post(f"{API_PRECO_VENDA_URL}/validation", json=body)
+            
+            response.raise_for_status()
+            
+            try:
+                print(response.json())
+            except:
+                print(response.text)
+                
+            
+        elif str(data.get('ticket', []).get('action', '')) == "Novo chamado":
+            id_chamado = data.get("ticket", []).get("id")
+            body = {
+                "id_chamado": id_chamado
+            }
+            response = requests.post(f"{API_PRECO_VENDA_URL}/ticket", json=body)
+            
+            response.raise_for_status()
+            
+            try:
+                print(response.json())
+            except:
+                print(response.text)
         
 
 
