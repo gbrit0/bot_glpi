@@ -432,6 +432,25 @@ def handle_glpi_webhook():
                 print(f"Erro {e}: Atribuir chamado ao time financeiro")
 
     try:
+        if data.get('ticket').get('category').startswith("Inteligência Artificial") and data.get('ticket').get('action') == "Novo chamado":
+            # Especificamente notificar Gabriel quando forem abertos novos chamados para o setor de Inteligência Artificial
+            payload = {
+                "number": "5562986342844",
+                "text":f"""*_NOVO CHAMADO DE INTELIGÊNCIA ARTIFICIAL_*\n\nOlá, Gabriel!\n\nRecebemos um novo chamado nº {data.get('ticket').get('id')} - {data.get('ticket').get('title')}\n\nPara acompanhar acesse o link: {data.get('ticket').get('url')}""",
+                "delay": 2000,
+                "linkPreview": True,
+                "mentionsEveryOne": False,
+                "quoted": {
+                    "key": {
+                        "fromMe": True,
+                        "type":'Novo chamado IA',
+                        "id": ""
+                    }
+                }                
+            }
+            
+            enqueue_chat(payload)
+            
         if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:       
             # Inicia a thread e responde imediatamente
             thread = Thread(target=send_update_protheus_async, args=(data,))
@@ -448,8 +467,12 @@ def handle_glpi_webhook():
         
             # print(f"{data}\n")
             id_chamado = data.get('ticket').get('id')
-            nome_tecnico, telefone_tecnico = busca_dados_tecnico(id_chamado)
-            mensagem_do_autor(nome_tecnico, telefone_tecnico, data)
+            try:
+                nome_tecnico, telefone_tecnico = busca_dados_tecnico(id_chamado)
+                mensagem_do_autor(nome_tecnico, telefone_tecnico, data)
+            except TypeError as e:
+                print(f"Erro ao buscar dados do técnico para mensagem do autor: {e}")
+                logger.error(f"{datetime.now()} - handle_glpi_webhook - Erro ao buscar dados do técnico para mensagem do autor: {e}", exc_info=True)
 
             # return jsonify("No message sent, last updater is the same as author."), 200
 
@@ -648,7 +671,7 @@ def mensagem_do_autor(nome_tecnico, telefone_tecnico, data):
 def send_message(data):
     # print("Entrou em send_message")
     match data.get('ticket').get('action'):
-        
+                    
         case 'Novo chamado':
             payload = {
                 "number": f"{data.get('author').get('mobile')}",
