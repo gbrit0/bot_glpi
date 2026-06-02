@@ -1,4 +1,4 @@
-import requests
+simport requests
 import os
 from dotenv import load_dotenv
 

@@ -11,7 +11,8 @@ import mysql.connector
 import queue
 import logging
 from logging.handlers import RotatingFileHandler
-
+import random
+import time
 # 1. Obtenha o logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # Defina o nível de log no logger principal
@@ -133,6 +134,31 @@ def grava_chamado_cadastro_fornecedor(id):
         
     # dados["Chamado"] = data.get("ticket", []).get("id", [])
 
+    url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendText/{os.getenv('EVOLUTION_INSTANCE')}"
+          
+    contato_coutinho = ['556481154742']
+    for contato in contato_coutinho:
+    
+        payload = {
+            "number": f'{contato}',
+            "text": f"Novo chamado de Cadastro de fornecedor"
+        }
+
+        try:
+            response = requests.post(
+                url,
+                json=payload,
+                headers={
+                    "apikey": os.getenv('EVOLUTION_API_KEY'),
+                    "Content-Type": "application/json"
+                }
+            )
+
+            retorno = response.json()
+
+        except Exception as e:
+            print(f"Erro {e} ao enviar mensagem para coutinho")
+
     try:
         query = f"INSERT INTO `automacoes`.`chamados_cadastro_fornecedor` (chamado, analisado) " \
                 f"VALUES (%s, 0);"
@@ -156,6 +182,74 @@ def grava_chamado_cadastro_fornecedor(id):
         logger.error(e)
     finally:
         cnx.close()
+
+
+def associar_usuario_ao_chamado_glpi(ticket_id: int, user_id: int, tipo_participacao: int = 2):
+    """
+    Associa um usuário a um chamado existente no GLPI, com um tipo de participação definido.
+
+    Esta função utiliza a API REST do GLPI para adicionar um ou mais usuários a um chamado,
+    com diferentes tipos de participação: solicitante, técnico ou observador.
+
+    Args:
+        ticket_id (int): ID do chamado existente.
+        user_id (int): ID do usuário que será adicionado.
+        tipo_participacao (int, opcional): Tipo de participação do usuário (1 = solicitante, 2 = técnico, 3 = observador). Padrão = 1.
+
+    Returns:
+        dict: Resposta padronizada com status HTTP, corpo da resposta e possíveis erros.
+    """
+    session_token = init_glpi_api_session()
+    
+    headers = {
+        'Content-Type': 'application/json',
+        'Session-Token': session_token,
+        'App-Token': os.getenv("GLPI_APP_TOKEN")
+    }
+    GLPI_API_BASE_URL = os.getenv("GLPI_API_BASE_URL")
+
+    endpoint = f"{GLPI_API_BASE_URL}/Ticket_User/"
+    
+    payload = {  
+        'input':[
+            {
+                "tickets_id": ticket_id,
+                "users_id": user_id,
+                "type": tipo_participacao
+            },
+            {
+                "tickets_id": ticket_id,
+                "users_id": 2,  #  usuário fixo como observador
+                "type": 3
+            }
+        ]
+    }
+
+    try:
+        response = requests.post(endpoint, headers=headers, json=payload)
+
+        response_data = {
+            'status_code': response.status_code,
+            'headers': dict(response.headers)
+        }
+
+        try:
+            response_data['body'] = response.json()
+        except json.JSONDecodeError:
+            response_data['body'] = response.text
+
+        
+        print(f"User_id {user_id} inserido como atribuido ao chamado {ticket_id}")
+        return response_data
+
+    except requests.RequestException as e:
+        print(f"Erro ao associar usuário ao chamado: {e}")
+        return {
+            'status_code': None,
+            'error': str(e)
+        }
+
+    
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -196,12 +290,40 @@ def handle_glpi_webhook():
             and str(data.get("validations", []).get("status")) == "Concedida":
                 
             # descricao = data.get("ticket", []).get("solution", []).get("approval", []).get("description", "ERRO AO OBTER DESCRIÇÂO")
-            descricao = data.get("validations", []).get("commentsubmission", "ERRO AO OBTER DESCRIÇÂO")
+            descricao = data.get("validations", []).get("commentsubmission", "ERRO AO OBTER DESCRIÇÃO") 
             id_chamado = data.get("ticket", []).get("id")
+            validador = data.get("validations", []).get("validator", "ERRO AO OBTER VALIDADOR")
+            status = data.get("validations", []).get("status")
             
             body = {
                 "id_chamado": f"{id_chamado}",
-                "descricao": f"{descricao}"
+                "descricao": f"{descricao}",
+                "validador": f"{validador}",
+                "status": f"{status}"
+            }
+            
+            response = requests.post(f"{API_PRECO_VENDA_URL}/validation", json=body)
+            response.raise_for_status()
+            
+            try:
+                print(response.json())
+            except:
+                print(response.text)
+                
+        elif str(data.get('ticket', []).get('action', '')) == "Resposta de pedido de validação" \
+            and str(data.get("validations", []).get("status")) == "Recusado":
+
+            descricao = data.get("validations", []).get("commentvalidation", "ERRO AO OBTER DESCRIÇÃO") 
+            # para casos de recusa ser enviado a explicação do josé carlos para o solicitante do preço de venda
+            id_chamado = data.get("ticket", []).get("id")
+            validador = data.get("validations", []).get("validator", "ERRO AO OBTER VALIDADOR")
+            status = data.get("validations", []).get("status")
+            
+            body = {
+                "id_chamado": f"{id_chamado}",
+                "descricao": f"{descricao}",
+                "validador": f"{validador}",
+                "status": f"{status}"
             }
             
             response = requests.post(f"{API_PRECO_VENDA_URL}/validation", json=body)
@@ -212,12 +334,14 @@ def handle_glpi_webhook():
                 print(response.json())
             except:
                 print(response.text)
-                
-            
+        
+        
         elif str(data.get('ticket', []).get('action', '')) == "Novo chamado":
             id_chamado = data.get("ticket", []).get("id")
+            openbyuser = data.get("ticket", []).get("openbyuser")
             body = {
-                "id_chamado": id_chamado
+                "id_chamado": id_chamado,
+                "openbyuser": openbyuser
             }
             response = requests.post(f"{API_PRECO_VENDA_URL}/ticket", json=body)
             
@@ -227,8 +351,85 @@ def handle_glpi_webhook():
                 print(response.json())
             except:
                 print(response.text)
-        
 
+        elif str(data.get('ticket', []).get('action', '')) == "Novo acompanhamento" and (str(data.get('ticket', []).get('lastupdater', '')) == 'Marina Pereira' or str(data.get('ticket', []).get('lastupdater', '')) == 'Izadora Cruz'):
+            
+            print("Cotação enviada pela Marina ou Izadora")
+            
+            id_chamado = data.get("ticket", []).get("id")
+            ticket = data.get("ticket", {})
+            solution = ticket.get("solution", {})
+            descricao = (
+                solution.get("approval", {}).get("description")
+                or solution.get("description")
+                or "ERRO AO OBTER DESCRIÇÃO"
+            )
+            body = {
+                "id_chamado": id_chamado,
+                "descricao": descricao
+            }
+            
+            response = requests.post(f"{API_PRECO_VENDA_URL}/resposta/cotacao", json=body)
+            
+            response.raise_for_status()
+            
+            # try:
+            #     print(response.json())
+            # except:
+            #     print(response.text)
+        
+    elif (
+        data.get('ticket', {}).get('action') == "Novo chamado"
+        and str(data.get("ticket", {}).get("title")).startswith(
+            ("Cartão Corporativo", "Solicitação de Passagem", "Solicitação", "Cadastro de Cliente")
+        )
+    ):
+        """Quando abrir chamados de Cartão Corporativo ou Solicitação de Passagem ou Justificativa de Pagamento avisar o Contas a Pagar """
+
+        url = f"{os.getenv('EVOLUTION_API_BASE_URL')}/message/sendText/{os.getenv('EVOLUTION_INSTANCE')}"
+        
+        titulo = data.get("ticket", {}).get("title")
+        id_chamado = data.get("ticket", []).get("id")
+        categoria = data.get("ticket", []).get("category")
+
+        if categoria != 'Financeiro solicitações':
+            print(f"Chamado Solicitação {id_chamado} - {titulo}: {categoria}")
+
+        else:
+            url_chamado = f'https://glpi.brggeradores.com.br/front/ticket.form.php?id={id_chamado}'
+            
+            contatos_financeiro = ['556293142733', '556292547045', '556292001150']
+            # contatos do contas a pagar: Guilherme, Flávia e Sinomarcos
+            for contato in contatos_financeiro:
+            
+                payload = {
+                    "number": f'{contato}',
+                    "text": f"Novo chamado aberto: {titulo}\nURL: {url_chamado}"
+                }
+
+                try:
+                    response = requests.post(
+                        url,
+                        json=payload,
+                        headers={
+                            "apikey": os.getenv('EVOLUTION_API_KEY'),
+                            "Content-Type": "application/json"
+                        }
+                    )
+
+                    retorno = response.json()
+
+                except Exception as e:
+                    print(f"Erro {e} ao enviar mensagem para financeiro de um novo chamado")
+
+            try:
+                """ Após abertura de chamado de passagem ou chamado de cartão corporativo inserir como atribuido para técnicos do financeiro contas a pagar """
+                users = [203, 47, 258]
+                for user_id in users:
+                    associar_usuario_ao_chamado_glpi(int(id_chamado), user_id, 2)
+
+            except Exception as e:
+                print(f"Erro {e}: Atribuir chamado ao time financeiro")
 
     try:
         if data.get('ticket').get('observergroups') == "notificacao_protheus" and (data.get('ticket').get('action') == "Novo chamado" or data.get('ticket').get('action') == "Chamado solucionado") and data.get('author').get('id') in ['2', '183', '233', '329', '137']:       
@@ -563,6 +764,7 @@ def chat_worker():
         payload = chat_queue.get()
         # print(f"Processando payload na fila: {payload}")
         try:
+            time.sleep(random.uniform(5, 15))  # Simula um tempo de processamento variável entre 5 e 15 segundos
             start_chat(payload)
         except Exception as e:
             print(f"Erro no chat_worker: {e}")
@@ -677,7 +879,7 @@ def busca_dados_tecnico(ticketId):
         t.id = %s
     """
     with pool.get_connection() as con:
-        with con.cursor() as cursor:
+        with con.cursor(buffered=True) as cursor:
             cursor.execute(query, (ticketId,))
             result = cursor.fetchone()
             if result:

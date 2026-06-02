@@ -1,23 +1,20 @@
 {
     "author": {
-        "id": "333",
-        "name": "Pedro Coutinho",
-        "mobile": "556481154742"
+        "id": "111",
+        "name": "Thiago Braz",
+        "mobile": "5562993141922\u202c"
     },
     "ticket": {
         "observergroups": "",
-        "action": "Atualização de um chamado",
+        "action": "Resposta de pedido de validação",
         "category": "Central de cadastros",
         "closedate": "",
-        "creationdate": "12-11-2025 16:25",
-        "entity": {
-            "name": "BRG Geradores > Controladoria",
-            "registration_number": ""
-        },
-        "globalvalidation": "Não está sujeita a aprovação",
-        "id": "0012284",
-        "lastupdater": "Pedro Coutinho",
-        "openbyuser": "Pedro Coutinho",
+        "creationdate": "23-02-2026 07:16",
+        "entity": "BRG Geradores > Controladoria",
+        "globalvalidation": "Esperando por uma validação",
+        "id": "0015002",
+        "lastupdater": "Inteligência Artificial",
+        "openbyuser": "Thiago Braz",
         "shortentity": "Controladoria",
         "solution": {
             "approval": {
@@ -30,26 +27,28 @@
             "type": ""
         },
         "satisfaction": {
-            "url": "https://glpi.brggeradores.com.br/front/ticket.form.php?id=0012284&forcetab=Ticket$3"
+            "url": "https://glpi.brggeradores.com.br/front/ticket.form.php?id=0015002&forcetab=Ticket$3"
         },
         "solvedate": "",
         "status": "Novo",
-        "title": "Solicitação de Orçamento - 1 Produtos",
-        "content": "",
-        "url": "https://glpi.brggeradores.com.br/index.php?redirect=ticket_0012284"
+        "title": "Solicitação de Preço de Venda - 1 Produtos",
+        "content": "<div>\xa0</div>\n<table style="border-collapse: collapse; width: 100.066%; height: 124.8px; border-spacing: 100px; margin-left: 0px; margin-right: auto; border: 2px solid rgb(0,
+        0,
+        0);" border="1"><colgroup><col style="width: 50.1656%;"><col style="width: 49.8344%;"></colgroup>\n<tbody>\n<tr style="height: 41.6px;">\n<td style="border-color: #000000; border-width: 2px; padding: 10px;"><strong>Filial do Sistema</strong></td>\n<td style="border-color: #000000; border-width: 2px; padding: 10px;">0501 - GRID</td>\n</tr>\n<tr style="height: 41.6px;">\n<td style="border-color: #000000; border-width: 2px; padding: 10px;"><strong>Venda Dentro ou Fora do Estado?</strong></td>\n<td style="padding: 10px;">Dentro - </td>\n</tr>\n<tr style="height: 41.6px;">\n<td style="border-color: #000000; border-width: 2px; padding: 10px;"><strong>Cliente é Parceiro?</strong></td>\n<td style="padding: 10px;">Não</td>\n</tr>\n<tr>\n<td style="border-color: #000000; border-width: 2px; padding: 10px;"><strong>Produtos Revenda Volvo?</strong></td>\n<td style="padding: 10px;">Sim</td>\n</tr>\n<tr>\n<td style="border-color: #000000; border-width: 2px; padding: 10px;"><strong>Códigos dos Produtos para Consulta de Preço de Venda</strong></td>\n<td style="padding: 10px;">\n<div>B0033567 Documento anexado</div>\n<div> </div>\n<div> </div>\n<div> </div>\n<div> <br><br> </div>\n<div> </div>\n<div> </div>\n<div> </div>\n<div> </div>\n<div> </div>\n<div>\xa0 </div>\n<div> </div>\n<div> </div>\n<div> </div>\n</td>\n</tr>\n</tbody>\n</table>",
+        "url": "https://glpi.brggeradores.com.br/index.php?redirect=ticket_0015002"
     },
     "validations": {
         "answer": {
-            "title": ""
+            "title": "Uma resposta para uma requisição de validação foi realizada por Jose Junior "
         },
-        "author": "",
-        "commentsubmission": "",
+        "author": "Inteligência Artificial",
+        "commentsubmission": "🧾 <b>Cálculo de Preço de Venda - Peças Volvo</b><br><br>🔹 <b>Produto:</b> B0033567<br>(21344746 PARAFUSO VOLANTE VOLVO)&nbsp;&nbsp;- Preço de Compra Volvo: R$ 23,31<br>&nbsp;&nbsp;- Preço de Venda Dentro do Estado: 💰 <b>R$ 53,77</b>&nbsp;&nbsp;- Preço de Venda Fora do Estado: 💰 <b>R$ 46,30</b>",
         "commentvalidation": "",
-        "status": "",
-        "submission": "",
-        "submissiondate": "",
-        "validationdate": "",
-        "validator": ""
+        "status": "Concedida",
+        "submission": "Um pedido de aprovação foi enviada por Inteligência Artificial",
+        "submissiondate": "23-02-2026 07:16",
+        "validationdate": "23-02-2026 08:47",
+        "validator": "Jose Junior"
     },
-    "documents": ""
+    "documents": "1"
 }

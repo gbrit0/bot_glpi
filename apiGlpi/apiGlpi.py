@@ -1,10 +1,10 @@
 import requests
 import base64
 
-baseUrl = 'localhost/apirest.php'
+baseUrl = 'http://172.49.49.8:7001/apirest.php'
 
-app_token = "<app_token>"
-auth = "user_token <user_token>"
+app_token = "SkTV3roFEdmtUDUvgBaR3EwTh4j0jrHqSYI7faHj"
+auth = "user_token ZZ8iIS6cu2oegFbbedxHCHabsxJkc1WaapcZiLCL"
 
 def initSession():
    headers = {
@@ -119,7 +119,7 @@ def updateItem(session_token, ticket_id):
 def main():
    session_token = initSession()
 
-   searchItems(session_token)
+   searchOptions(session_token)
 
    killSession(session_token)
 
